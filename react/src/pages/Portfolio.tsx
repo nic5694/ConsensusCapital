@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Header from '../components/Header'
 import { usePortfolio } from '../contexts/PortfolioContext'
-import yahooFinance from 'yahoo-finance2'
 
 type TickerResult = {
   symbol: string;
@@ -22,7 +21,7 @@ type YahooSearchResponse = {
 }
 
 function Portfolio() {
-  const { assets, addAsset, removeAsset, clearAssets, getAssetCount } = usePortfolio()
+  const { assets, addAsset, removeAsset, clearAssets, getAssetCount, updateAsset } = usePortfolio()
   const [query, setQuery] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('')
   const [searchResults, setSearchResults] = useState<TickerResult[]>([])
@@ -41,13 +40,20 @@ function Portfolio() {
 
       if (!data.quotes) return []
 
-      return data.quotes
+      const results = data.quotes
         .filter(item => item.quoteType === 'EQUITY' || item.quoteType === 'ETF' || item.quoteType === 'CRYPTOCURRENCY')
         .map(item => ({
           symbol: item.symbol,
           name: item.shortname ?? item.longname ?? item.symbol,
           exchange: item.exchange
         }))
+
+      // Remove duplicates by symbol
+      const uniqueResults = results.filter((result, index, self) =>
+        index === self.findIndex((r) => r.symbol === result.symbol)
+      )
+
+      return uniqueResults
     } catch (error) {
       console.error('Error searching ticker:', error)
       return []
@@ -86,26 +92,37 @@ function Portfolio() {
     const name = selectedResult?.name || query
     const symbol = query.toUpperCase()
 
-    // Fetch stock price
-    let price: number | undefined = undefined
-    try {
-      const quote = await yahooFinance.quote(symbol)
-      price = quote.regularMarketPrice
-      console.log(`Fetched price for ${symbol}: ${price} ${quote.currency}`)
-    } catch (error) {
-      console.error(`Error fetching price for ${symbol}:`, error)
-    }
-
+    // Add asset immediately without price
     addAsset({
       symbol: symbol,
       name: name,
       quantity: parseFloat(quantity),
-      value: price
+      value: undefined
     })
-    
+
+    // Clear form immediately for better UX
     setQuery('')
     setQuantity('')
     setSearchResults([])
+
+    // Fetch stock price in the background and update
+    try {
+      const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`
+      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
+      
+      const response = await fetch(proxyUrl)
+      const data = await response.json()
+      
+      if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+        const price = data.chart.result[0].meta.regularMarketPrice
+        console.log(`Fetched price for ${symbol}: $${price}`)
+        
+        // Update the asset with the fetched price
+        updateAsset(symbol, { value: price })
+      }
+    } catch (error) {
+      console.error(`Error fetching price for ${symbol}:`, error)
+    }
   }
 
   const handleRemoveAsset = (symbol: string) => {
@@ -125,28 +142,27 @@ function Portfolio() {
     <div className="min-h-screen overflow-x-hidden bg-slate-950">
       <Header />
       
-      <div className="fixed inset-0 technical-grid opacity-20 pointer-events-none"></div>
-      
-      <div className="relative max-w-4xl mx-auto px-6">
-        <header className="mb-12 text-center">
-          <div className="inline-flex items-center space-x-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full mb-6">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Asset Inventory Input</span>
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight mb-4 text-white">
-            Manual <span className="text-primary">Portfolio Entry</span>
-          </h1>
-          <p className="text-slate-400 max-w-lg mx-auto text-lg leading-relaxed">
-            Input your current holdings to analyze exposure against Polymarket prediction data.
-          </p>
-        </header>
+      <main className="relative min-h-screen technical-grid">
+        <div className="mx-auto w-full px-6 py-8">
+          <header className="mb-12 text-center">
+            <div className="inline-flex items-center space-x-2 bg-primary/10 border border-primary/20 px-3 py-1 rounded-full mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Asset Inventory Input</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight mb-4 text-white">
+              Manual <span className="text-primary">Portfolio Entry</span>
+            </h1>
+            <p className="text-slate-400 max-w-lg mx-auto text-lg leading-relaxed">
+              Input your current holdings to analyze exposure against Polymarket prediction data.
+            </p>
+          </header>
 
-        <main className="space-y-8">
-          <div className="glass-panel rounded-2xl shadow-xl p-6 relative z-10">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <div className="space-y-8">
+            <div className="glass-panel rounded-2xl shadow-xl p-6 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
               <div className="md:col-span-6 relative z-[60]">
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 ml-1">Asset Ticker</label>
                 <input
@@ -204,8 +220,7 @@ function Portfolio() {
                   onClick={handleAddAsset}
                   disabled={!query || !quantity}
                 >
-                  <span className="material-icons-round">add</span>
-                  <span className="ml-1 md:hidden lg:inline">Add Row</span>
+                  <span className="ml-1 md:hidden lg:inline">Add</span>
                 </button>
               </div>
             </div>
@@ -299,14 +314,34 @@ function Portfolio() {
               Aggregating portfolio risk metrics using real-time market signals
             </p>
           </div>
-        </main>
+        </div>
+
+        <footer className="mt-20 flex items-center justify-center border-t border-slate-800/50 pt-8">
+            <button
+              className="flex items-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                setQuery('')
+                setQuantity('')
+                setSearchResults([])
+              }}
+            >
+              <span className="material-icons-round text-sm mr-2">refresh</span>
+              Reset All Fields
+            </button>
+          </footer>
+        </div>
+      </main>
+
+      {/* Background Decoration */}
+      <div className="fixed bottom-0 left-0 w-full h-1/2 pointer-events-none -z-10 opacity-10">
+        <div className="w-full h-full bg-gradient-to-t from-primary/20 to-transparent"></div>
       </div>
 
       <style>{`
         .glass-panel {
-          background: rgba(28, 37, 39, 0.7);
+          background: rgba(15, 23, 42, 0.8);
           backdrop-filter: blur(12px);
-          border: 1px solid rgba(59, 79, 84, 0.5);
+          border: 1px solid rgba(51, 65, 85, 0.5);
         }
         .glow-cyan {
           box-shadow: 0 0 20px rgba(15, 160, 189, 0.2);

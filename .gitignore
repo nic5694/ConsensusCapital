@@ -179,3 +179,5 @@ terraform/.terraform.lock.hcl
 .DS_Store
 backend/temp.jpg
 terraform/terraform.tfvars
+
+package-lock.json

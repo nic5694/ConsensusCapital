@@ -6,23 +6,23 @@ import Login from './pages/Login'
 import Portfolio from './pages/Portfolio'
 import NotFound from './pages/NotFound'
 import './App.css'
-import {CallbackPage} from "./pages/Callback.tsx";
-import {AuthenticationGuard} from "./guards/authentication-guard.tsx";
+import { CallbackPage } from "./pages/Callback.tsx";
+import { AuthenticationGuard } from "./guards/authentication-guard.tsx";
 
 function App() {
-    return (
-          <PortfolioProvider>
-        <Routes>
-            <Route path="/" element={<Layout/>}>
-                <Route index element={<AuthenticationGuard component={Home}/>}/>
-                <Route path="portfolio" element={<Portfolio />} />
-                <Route path="*" element={<NotFound/>}/>
-            </Route>
-            <Route path="/callback" element={<CallbackPage/>}/>
-            <Route path="/login" element={<Login/>}/>
-        </Routes>
-            </PortfolioProvider>
-    )
+  return (
+    <PortfolioProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<AuthenticationGuard component={Home} />} />
+          <Route path="portfolio" element={<AuthenticationGuard component={Portfolio} />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+        <Route path="/callback" element={<CallbackPage />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </PortfolioProvider>
+  )
 }
 
 export default App
