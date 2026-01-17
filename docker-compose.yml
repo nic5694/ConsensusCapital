@@ -1,0 +1,32 @@
+services:
+
+  backend:
+    build: ./SpringBoot/.
+    hostname: backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+      - mongo-db
+
+  mongo-db:
+    image: mongo
+    container_name: mongo-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pwd
+    ports:
+      - "27017:27017"
+
+  react-frontend:
+    image: frontend
+    container_name: react-frontend
+    build:
+      context: ./react/.
+      dockerfile: Dockerfile
+      args:
+        - BUILD_MODE=development
+    ports:
+      - '3000:3000'
