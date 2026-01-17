@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/portfolio")
+@RequestMapping("/api/v1/portfolios")
 @CrossOrigin(origins = "http://localhost:3000")
 public class PortfolioController {
     private final PortfolioService portfolioService;
@@ -28,7 +28,7 @@ public class PortfolioController {
         return portfolioService.fetchPortfolio(userId);
     }
 
-    @PutMapping
+    @PutMapping("/assets")
     public void addAssetToPortfolio(@RequestBody AssetRequest assetRequest,
                                     @AuthenticationPrincipal Jwt user) {
         String userId = user.getSubject();
