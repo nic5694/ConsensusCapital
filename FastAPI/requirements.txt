@@ -4,3 +4,6 @@ uvicorn
 numpy
 torch
 torchsummary
+pandas
+requests
+scipy
