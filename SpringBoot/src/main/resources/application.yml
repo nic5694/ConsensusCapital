@@ -1,0 +1,24 @@
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+application:
+  client-origin-url: http://localhost:3000
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  port: 8080
+
+  web:
+    resources:
+      add-mappings: false
+
+okta:
+  oauth2:
+    issuer: https://dev-7k6npylc7qks07rv.us.auth0.com/
+    audience: https://api.consensus.com
+...
