@@ -11,7 +11,7 @@ import lombok.*;
 @EqualsAndHashCode
 public class AssetRequest {
     private String symbol;
-    private int quantity;
+    private double quantity;
 
     public Asset toAsset() {
         return Asset.builder()
