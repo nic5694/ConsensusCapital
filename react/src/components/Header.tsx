@@ -1,6 +1,16 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from 'react-oidc-context'
 
 function Header() {
+  const { isAuthenticated, signoutRedirect } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    signoutRedirect({
+      post_logout_redirect_uri: window.location.origin + '/',
+    })
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 w-full z-50 border-b border-solid border-[#283639] bg-background-dark/80 backdrop-blur-md px-6 lg:px-20 py-4">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
@@ -19,11 +29,20 @@ function Header() {
           <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Docs</a>
         </nav>
         <div className="flex gap-4 flex-shrink-0">
-          <Link to="/login">
-            <button className="flex items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
-              <span>Get Started</span>
+          {isAuthenticated ? (
+            <button 
+              className="flex items-center justify-center rounded-lg h-10 px-6 bg-red-500 text-white text-sm font-bold transition-all hover:bg-red-600 active:scale-95 whitespace-nowrap"
+              onClick={handleLogout}
+            >
+              <span>Log Out</span>
             </button>
-          </Link>
+          ) : (
+            <Link to="/login">
+              <button className="flex items-center justify-center rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold transition-all hover:scale-105 active:scale-95 whitespace-nowrap">
+                <span>Get Started</span>
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -15,7 +15,7 @@ export const AuthProviderWithNavigate = ({ children}) => {
         import.meta.env.VITE_REACT_APP_AUTHORITY ||
         (domain ? `https://${domain}` : undefined);
 
-    const onSigninCallback = () => {
+    const onSigninCallback = async () => {
         navigate(window.location.pathname);
         window.history.replaceState({}, document.title, window.location.pathname);
     };

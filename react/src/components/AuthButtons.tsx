@@ -15,27 +15,18 @@ const AuthButtons = () => {
         await auth.signinRedirect();
     };
 
-
-    const handleLogout = () => {
-        auth.signoutRedirect({
-            post_logout_redirect_uri: window.location.origin,
-        }).then(r =>
-            console.log(r)
-        );
-    };
-
     if (auth.isAuthenticated) {
 
         return (
-            <div>
-                <span>Hello, {auth.user?.profile.name}</span>
-                <button className="button__logout" onClick={handleLogout}>
-                    Log Out
-                </button>
+            <div className="flex flex-col gap-4">
+                <span className="text-white text-center">Hello, {auth.user?.profile.name}</span>
             </div>
         );
     } else {
-        return <button className="button__login" onClick={handleLogin}>
+        return <button 
+            className="w-full bg-primary text-white py-3 px-6 rounded-xl font-bold flex items-center justify-center hover:bg-primary/90 transition-all active:scale-95 glow-cyan" 
+            onClick={handleLogin}
+        >
             Log In
         </button>;
     }

@@ -15,6 +15,7 @@ type PortfolioContextType = {
   removeAsset: (symbol: string) => void
   updateAsset: (symbol: string, updates: Partial<Asset>) => void
   clearAssets: () => void
+  setAssets: (assets: Asset[]) => void
   getAsset: (symbol: string) => Asset | undefined
   getTotalValue: () => number
   getAssetCount: () => number
@@ -80,6 +81,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     removeAsset,
     updateAsset,
     clearAssets,
+    setAssets,
     getAsset,
     getTotalValue,
     getAssetCount,

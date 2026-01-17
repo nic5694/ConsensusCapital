@@ -14,7 +14,7 @@ function App() {
     <PortfolioProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<AuthenticationGuard component={Home} />} />
+          <Route index element={<Home />} />
           <Route path="portfolio" element={<AuthenticationGuard component={Portfolio} />} />
           <Route path="*" element={<NotFound />} />
         </Route>
