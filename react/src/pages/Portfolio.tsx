@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Header from '../components/Header'
 import { usePortfolio } from '../contexts/PortfolioContext'
+import { useAuth } from 'react-oidc-context'
+import * as portfolioService from '../services/portfolioService'
 
 type TickerResult = {
   symbol: string;
@@ -22,6 +24,7 @@ type YahooSearchResponse = {
 
 function Portfolio() {
   const { assets, addAsset, removeAsset, clearAssets, getAssetCount, updateAsset } = usePortfolio()
+  const { user } = useAuth()
   const [query, setQuery] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('')
   const [searchResults, setSearchResults] = useState<TickerResult[]>([])
@@ -91,14 +94,23 @@ function Portfolio() {
     const selectedResult = searchResults.find(r => r.symbol === query)
     const name = selectedResult?.name || query
     const symbol = query.toUpperCase()
+    const token = user?.access_token || ''
 
-    // Add asset immediately without price
-    addAsset({
-      symbol: symbol,
-      name: name,
-      quantity: parseFloat(quantity),
-      value: undefined
-    })
+    // Add asset to database
+    try {
+      await portfolioService.addAsset(token, symbol, parseFloat(quantity))
+      
+      // Add asset to context after successful DB operation
+      addAsset({
+        symbol: symbol,
+        name: name,
+        quantity: parseFloat(quantity),
+        value: undefined
+      })
+    } catch (error) {
+      console.error(`Error adding asset to database:`, error)
+      return // Don't proceed if DB operation failed
+    }
 
     // Clear form immediately for better UX
     setQuery('')
@@ -125,12 +137,32 @@ function Portfolio() {
     }
   }
 
-  const handleRemoveAsset = (symbol: string) => {
-    removeAsset(symbol)
+  const handleRemoveAsset = async (symbol: string) => {
+    const token = user?.access_token || ''
+    
+    try {
+      // Remove from database first
+      await portfolioService.removeAsset(token, symbol)
+      
+      // Remove from context after successful DB operation
+      removeAsset(symbol)
+    } catch (error) {
+      console.error(`Error removing asset from database:`, error)
+    }
   }
 
-  const handleClearAll = () => {
-    clearAssets()
+  const handleClearAll = async () => {
+    const token = user?.access_token || ''
+    
+    try {
+      // Clear from database first
+      await portfolioService.clearAssets(token)
+      
+      // Clear from context after successful DB operation
+      clearAssets()
+    } catch (error) {
+      console.error(`Error clearing assets from database:`, error)
+    }
   }
 
   const handleContinue = () => {
@@ -209,6 +241,7 @@ function Portfolio() {
                   placeholder="0.00"
                   type="number"
                   step="0.0001"
+                  min="0"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                 />

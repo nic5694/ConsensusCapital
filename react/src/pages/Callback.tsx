@@ -2,6 +2,7 @@ import {useEffect} from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
 import { usePortfolio } from "../contexts/PortfolioContext";
+import { getPortfolio, createPortfolio } from "../services/portfolioService";
 
 export const CallbackPage = () => {
     const { isLoading, isAuthenticated, error, user } = useAuth();
@@ -9,67 +10,41 @@ export const CallbackPage = () => {
     const { setAssets } = usePortfolio();
 
     useEffect(() => {
-        const createPortfolio = async () => {
+        const initializePortfolio = async () => {
             if (isAuthenticated) {
                 const token = user?.access_token || "";
-                const baseUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL + "/api/v1/portfolios";
             
                 try {
                     // Check if portfolio exists
-                    let getResponse = await fetch(baseUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
+                    let portfolioResponse = await getPortfolio(token);
 
-                    // If portfolio doesn't exist (404), create it
-                    if (!getResponse.ok) {
-                        console.log('Portfolio not found, creating new portfolio');
-                        const createResponse = await fetch(baseUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({})
-                        });
-
-                        if (createResponse.ok) {
-                            console.log('Created portfolio');
-                            
-                            // Fetch the newly created portfolio
-                            getResponse = await fetch(baseUrl, {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            });
-                        }
+                    // If portfolio doesn't exist (error), create it
+                    if (portfolioResponse.error) {
+                        await createPortfolio(token);
+                        
+                        // Fetch the newly created portfolio
+                        portfolioResponse = await getPortfolio(token);
                     }
                     
                     // Load portfolio assets into context
-                    if (getResponse.ok) {
-                        const portfolio = await getResponse.json();
-                        console.log('Fetched portfolio (raw response):', portfolio);
+                    if (portfolioResponse.data) {
+                        console.log('Fetched portfolio (raw response):', portfolioResponse.data);
                         
                         // Set assets to context
-                        if (portfolio.assets && Array.isArray(portfolio.assets)) {
-                            setAssets(portfolio.assets);
+                        if (portfolioResponse.data.assets && Array.isArray(portfolioResponse.data.assets)) {
+                            setAssets(portfolioResponse.data.assets);
                         }
                     }
                 } catch (error) {
-                    console.error('Error creating portfolio:', error);
+                    console.error('Error initializing portfolio:', error);
                 }
                 
                 navigate("/", { replace: true });
             }
         };
         
-        createPortfolio();
-    }, [isAuthenticated, navigate, user]);
+        initializePortfolio();
+    }, [isAuthenticated, navigate, user, setAssets]);
     
 
     if (error) {
