@@ -13,9 +13,9 @@ function Header() {
           <h2 className="text-xl font-bold tracking-tight whitespace-nowrap">CONSENSUS-CAPITAL</h2>
         </Link>
         <nav className="hidden md:flex items-center gap-10 flex-shrink-0">
-          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/">Terminal</Link>
+          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/">Home</Link>
+          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/portfolio">Portfolio</Link>
           <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Risk Engine</a>
-          <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Data Feed</a>
           <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Docs</a>
         </nav>
         <div className="flex gap-4 flex-shrink-0">
