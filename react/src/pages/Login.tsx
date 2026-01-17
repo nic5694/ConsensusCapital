@@ -1,13 +1,7 @@
 import Header from '../components/Header'
+import AuthButtons from "../components/AuthButtons.tsx";
 
 function Login() {
-  const handleSignIn = () => {
-    // TODO: Implement sign in logic
-  }
-
-  const handleRegister = () => {
-    // TODO: Implement register logic
-  }
 
   return (
     <div className="min-h-screen overflow-x-hidden">
@@ -63,18 +57,7 @@ function Login() {
             <div className="absolute -top-20 -right-20 w-96 h-96 bg-primary/10 blur-[100px] rounded-full"></div>
             <div className="glass-panel rounded-2xl p-8 lg:p-10 shadow-2xl relative z-10">
               <div className="flex flex-col gap-4">
-                <button 
-                  onClick={handleSignIn}
-                  className="w-full py-4 text-sm font-bold rounded-lg bg-primary text-white transition-all hover:bg-primary/90 glow-cyan"
-                >
-                  Sign In
-                </button>
-                <button 
-                  onClick={handleRegister}
-                  className="w-full py-4 text-sm font-bold rounded-lg bg-primary text-white transition-all hover:bg-primary/90 glow-cyan"
-                >
-                  Register
-                </button>
+                <AuthButtons />
               </div>
             </div>
           </div>
