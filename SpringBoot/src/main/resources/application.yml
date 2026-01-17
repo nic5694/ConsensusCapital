@@ -3,6 +3,14 @@ spring:
   config:
     activate:
       on-profile: dev
+  data:
+    mongodb:
+      host: mongo-db
+      port: 27017
+      database: db
+      username: root
+      password: pwd
+      authentication-database: admin
 
 application:
   client-origin-url: http://localhost:3000
