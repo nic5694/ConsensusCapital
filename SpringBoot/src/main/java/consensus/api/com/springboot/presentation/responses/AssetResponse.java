@@ -10,7 +10,7 @@ import lombok.*;
 public class AssetResponse {
     private String symbol;
     private String name;
-    private int quantity;
+    private double quantity;
     private double value;
     private String[] keywords;
     private String description;
