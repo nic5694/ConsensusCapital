@@ -11,23 +11,21 @@ import lombok.*;
 public class PortfolioResponse {
     private String portfolioId;
     private String userId;
+    private double totalValue;
     private AssetResponse[] assets;
 
-    public static PortfolioResponse fromModel(Portfolio portfolio) {
-        AssetResponse[] assetResponses = portfolio.getAssets().stream()
-                .map(asset -> AssetResponse.builder()
-                        .symbol(asset.getSymbol())
-                        .name(asset.getName())
-                        .quantity(asset.getQuantity())
-                        .value(asset.getValue())
-                        .keywords(asset.getKeywords())
-                        .description(asset.getDescription())
-                        .build())
-                .toArray(AssetResponse[]::new);
+    public static PortfolioResponse fromModel(Portfolio portfolio, AssetResponse[] assetResponses) {
+
+        double totalValue = portfolio.getAssets().stream()
+                .mapToDouble(asset -> asset.getValue() * asset.getQuantity())
+                .sum();
+
+        totalValue = Math.round(totalValue * 100.0) / 100.0;
 
         return PortfolioResponse.builder()
                 .portfolioId(portfolio.getId())
                 .userId(portfolio.getUserId())
+                .totalValue(totalValue)
                 .assets(assetResponses)
                 .build();
     }

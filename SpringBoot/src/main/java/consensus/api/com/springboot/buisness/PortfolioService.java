@@ -9,4 +9,6 @@ public interface PortfolioService {
     PortfolioResponse fetchPortfolio(String userId);
 
     void addAssetToPortfolio(String userId, AssetRequest assetRequest);
+
+    void removeAssetFromPortfolio(String userId, String assetSymbol);
 }
