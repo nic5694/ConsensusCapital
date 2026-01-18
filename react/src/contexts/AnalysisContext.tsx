@@ -11,10 +11,23 @@ export interface ActionableInsight {
   suggested_action: 'IGNORE' | 'MONITOR' | 'ACT';
 }
 
+export interface Selection {
+  outcome: string;
+  price: number | null;
+}
+
+export interface Market {
+  id: string;
+  question: string;
+  image: string;
+  selections: Selection[];
+}
+
 export interface InterestingEvent {
   id: string;
   title: string;
   description: string;
+  markets: Market[];
 }
 
 export interface PortfolioSummary {

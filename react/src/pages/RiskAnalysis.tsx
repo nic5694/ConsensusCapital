@@ -55,11 +55,12 @@ const RiskAnalysis: React.FC = () => {
           try {
             console.log("Starting Gumloop pipeline...");
             const startResponse = await fetch(
-              "https://api.gumloop.com/api/v1/start_pipeline?api_key=3e95818c061a45f7ab312cb2ddee32f9&user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&saved_item_id=tz7L5vc6mheecf3JtmXhsT",
+              "https://api.gumloop.com/api/v1/start_pipeline?user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&saved_item_id=qNZw47eAXDW1y7MFkvAQBu",
               {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  "Authorization": `Bearer ${import.meta.env.VITE_GUMLOOP_BEARER_TOKEN}`
                 },
                 body: JSON.stringify(portfolioPayload),
               }
@@ -299,13 +300,55 @@ const RiskAnalysis: React.FC = () => {
                           <p className="text-slate-500 text-sm">No notable events at this time</p>
                         </div>
                       ) : (
-                        interestingEvents.map((event) => (
-                          <div key={event.id} className="bg-slate-900/50 border border-[#283639] rounded-lg p-4 hover:border-[#0fa0bd]/30 transition-colors cursor-pointer">
-                            <div className="flex items-start justify-between mb-2">
-                              <p className="text-white text-sm font-medium flex-1">{event.title}</p>
+                        interestingEvents.map((event) => {
+                          // Filter markets that have valid prices
+                          const validMarkets = event.markets?.filter(market => 
+                            market.selections.some(sel => sel.price !== null)
+                          ) || [];
+
+                          return (
+                            <div key={event.id} className="bg-slate-900/50 border border-[#283639] rounded-lg p-4 hover:border-[#0fa0bd]/30 transition-colors">
+                              <div className="flex items-start justify-between mb-3 relative group">
+                                <p className="text-white text-sm font-medium flex-1">{event.title}</p>
+                                
+                                {/* Tooltip with description - triggers on title or tooltip hover */}
+                                {event.description && (
+                                  <div className="absolute left-0 top-full mt-2 w-[32rem] h-24 bg-slate-800 border border-primary/30 rounded-lg p-3 shadow-2xl z-[1000] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-auto hover:opacity-100 hover:visible overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800/50">
+                                    <p className="text-slate-300 text-xs leading-relaxed">{event.description}</p>
+                                    {/* Arrow pointer pointing up */}
+                                    <div className="absolute bottom-full left-6 w-0 h-0 border-l-6 border-r-6 border-b-6 border-l-transparent border-r-transparent border-b-slate-800"></div>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Only show markets section if there are valid markets */}
+                              {validMarkets.length > 0 && (
+                                <div className="space-y-2 mt-3 pt-3 border-t border-slate-700">
+                                  <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-2">Possible Outcomes</p>
+                                  {validMarkets.map((market) => (
+                                    <div key={market.id} className="bg-slate-800/50 rounded p-3 space-y-2">
+                                      {validMarkets.length > 1 && (
+                                        <p className="text-white text-xs font-medium leading-snug mb-2">{market.question}</p>
+                                      )}
+                                      {market.selections && market.selections.length > 0 && (
+                                        <div className="flex gap-2">
+                                          {market.selections.map((selection, idx) => (
+                                            <div key={idx} className="flex-1 bg-slate-900 rounded px-2 py-1.5">
+                                              <p className="text-slate-400 text-[10px] uppercase font-bold mb-0.5">{selection.outcome}</p>
+                                              <p className="text-primary text-xs font-bold">
+                                                {selection.price !== null ? `${(selection.price * 100).toFixed(1)}%` : 'N/A'}
+                                              </p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        ))
+                          );
+                        })
                       )}
                     </div>
                   </section>

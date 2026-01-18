@@ -32,7 +32,7 @@ public class PolyMarketServiceImpl implements PolyMarketService {
 
         try {
             String searchUrl = UriComponentsBuilder
-                    .fromHttpUrl("https://gamma-api.polymarket.com/events?closed=false&limit=50&order=volume24hr&active=true")
+                    .fromHttpUrl("https://gamma-api.polymarket.com/events?closed=false&limit=7&order=volume24hr&active=true")
                     .toUriString();
 
             ResponseEntity<String> response =
