@@ -4,6 +4,8 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 ARG BUILD_MODE
+ARG VITE_GUMLOOP_BEARER_TOKEN
+ENV VITE_GUMLOOP_BEARER_TOKEN=$VITE_GUMLOOP_BEARER_TOKEN
 RUN npm run build:${BUILD_MODE}
 FROM nginx:alpine
 RUN chown -R nginx:nginx /var/cache/nginx /var/run /var/log/nginx
@@ -11,5 +13,6 @@ RUN chown -R nginx:0 /usr/share/nginx/html && \
     chmod -R g+r+rwX /usr/share/nginx/html
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
+
 EXPOSE 3000
 CMD ["nginx", "-g", "daemon off;"]

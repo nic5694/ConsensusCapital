@@ -13,16 +13,11 @@ type TickerResult = {
   exchange: string;
 }
 
-type YahooQuote = {
-  symbol: string;
-  quoteType: string;
-  shortname?: string;
-  longname?: string;
-  exchange: string;
-}
-
-type YahooSearchResponse = {
-  quotes?: YahooQuote[];
+type StockDTO = {
+  symbol: string
+  name: string | null
+  fullExchangeName: string | null
+  price: number | null
 }
 
 function Portfolio() {
@@ -39,33 +34,39 @@ function Portfolio() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   async function searchTicker(query: string): Promise<TickerResult[]> {
-    // Using allorigins CORS proxy
-    const yahooUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
+    if (!query.trim()) return []
+
+    const baseUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
+    const url = `${baseUrl}/api/v1/yahoo/symbols?query=${encodeURIComponent(query)}`
 
     try {
-      const response = await fetch(proxyUrl)
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
 
-      const data: YahooSearchResponse = await response.json()
+      if (!response.ok) {
+        console.error("Yahoo symbols API error:", response.status)
+        return []
+      }
 
-      if (!data.quotes) return []
-      console.log("quotes: " + data.quotes)
-      const results = data.quotes
-        .filter(item => item.quoteType === 'EQUITY' || item.quoteType === 'ETF' || item.quoteType === 'CRYPTOCURRENCY')
-        .map(item => ({
-          symbol: item.symbol,
-          name: item.shortname ?? item.longname ?? item.symbol,
-          exchange: item.exchange
-        }))
+      const data: StockDTO[] = await response.json()
+
+      const results: TickerResult[] = (data ?? []).map((item) => ({
+        symbol: item.symbol,
+        name: item.name ?? item.symbol,
+        exchange: item.fullExchangeName ?? "",
+      }))
 
       // Remove duplicates by symbol
-      const uniqueResults = results.filter((result, index, self) =>
-        index === self.findIndex((r) => r.symbol === result.symbol)
+      return results.filter(
+          (result, index, self) =>
+              index === self.findIndex((r) => r.symbol === result.symbol)
       )
-
-      return uniqueResults
     } catch (error) {
-      console.error('Error searching ticker:', error)
+      console.error("Error searching ticker:", error)
       return []
     }
   }
@@ -410,7 +411,8 @@ function Portfolio() {
               <thead>
                 <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-400 border-b border-slate-700">
                   <th className="px-8 py-5 font-bold">Ticker</th>
-                  <th className="px-8 py-5 font-bold text-center">Holdings</th>
+                  <th className="px-8 py-5 font-bold text-right">Exchange</th>
+                  <th className="px-8 py-5 font-bold text-left">Holdings</th>
                   <th className="px-8 py-5 font-bold text-right">Price</th>
                   <th className="px-8 py-5 font-bold text-right">Value</th>
                   <th className="px-8 py-5 font-bold text-right">Remove</th>
@@ -434,6 +436,11 @@ function Portfolio() {
                             <div className="text-xs text-slate-400">{asset.name}</div>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-8 py-5 text-center">
+                        <span className="font-mono font-medium text-slate-300 text-left">
+                          {asset.fullExchangeName}
+                          </span>
                       </td>
                       <td className="px-8 py-5 text-center">
                         <span className="font-mono font-medium text-slate-300">

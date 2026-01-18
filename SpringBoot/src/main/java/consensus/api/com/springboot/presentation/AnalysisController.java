@@ -7,6 +7,7 @@ import consensus.api.com.springboot.buisness.PortfolioService;
 import consensus.api.com.springboot.presentation.request.AssetRequest;
 import consensus.api.com.springboot.presentation.responses.PortfolioResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,9 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     @GetMapping("/summary")
-    public List<PolyMarketInfoDTO> getMarketSummary() {
-        String userId = "user-user";
+    @Cacheable(cacheNames = "analysisSummary", key = "#user.getSubject()")
+    public List<PolyMarketInfoDTO> getMarketSummary(@AuthenticationPrincipal Jwt user) {
+        String userId = user.getSubject();
         return analysisService.analyzeData(userId);
     }
 

@@ -7,6 +7,7 @@ import consensus.api.com.springboot.presentation.responses.AssetResponse;
 import consensus.api.com.springboot.presentation.responses.PortfolioResponse;
 import consensus.api.com.springboot.buisness.DTO.StockDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

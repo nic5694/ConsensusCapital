@@ -52,6 +52,7 @@ dependencies {
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     implementation("org.apache.commons:commons-text:1.15.0")
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 
 export type Asset = {
   symbol: string;
+  fullExchangeName: string;
   name: string;
   quantity: number;
   value?: number;

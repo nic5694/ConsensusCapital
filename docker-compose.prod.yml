@@ -20,6 +20,7 @@ services:
       context: ./react
       dockerfile: Dockerfile
       args:
+        - VITE_GUMLOOP_BEARER_TOKEN=${VITE_GUMLOOP_BEARER_TOKEN}
         - BUILD_MODE=production
     env_file:
       - stack.env
