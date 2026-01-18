@@ -36,11 +36,11 @@ spring:
       on-profile: prod
   data:
     mongodb:
-      host: mongo-db
+      host: consensuscapital.thfp82y.mongodb.net
       port: 27017
-      database: db
-      username: root
-      password: pwd
+      database: admin
+      username: reader
+      password: ${MONGO_PWD}
       authentication-database: admin
 
 application:
