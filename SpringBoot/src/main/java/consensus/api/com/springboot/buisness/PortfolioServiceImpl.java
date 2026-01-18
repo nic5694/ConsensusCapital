@@ -44,6 +44,7 @@ public class PortfolioServiceImpl implements PortfolioService {
                         .name(asset.getName())
                         .quantity(asset.getQuantity())
                         .value(stockService.searchAndGetPrice(asset.getSymbol()).price())
+                        .fullExchangeName(asset.getFullExchangeName())
                         .keywords(asset.getKeywords())
                         .description(asset.getDescription())
                         .build())

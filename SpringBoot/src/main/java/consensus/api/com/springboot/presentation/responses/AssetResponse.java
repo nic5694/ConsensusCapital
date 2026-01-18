@@ -12,6 +12,7 @@ public class AssetResponse {
     private String name;
     private double quantity;
     private double value;
+    private String fullExchangeName;
     private String[] keywords;
     private String description;
 }
