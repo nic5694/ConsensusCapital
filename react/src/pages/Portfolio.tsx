@@ -411,7 +411,8 @@ function Portfolio() {
               <thead>
                 <tr className="text-[10px] uppercase tracking-[0.2em] text-slate-400 border-b border-slate-700">
                   <th className="px-8 py-5 font-bold">Ticker</th>
-                  <th className="px-8 py-5 font-bold text-center">Holdings</th>
+                  <th className="px-8 py-5 font-bold text-right">Exchange</th>
+                  <th className="px-8 py-5 font-bold text-left">Holdings</th>
                   <th className="px-8 py-5 font-bold text-right">Price</th>
                   <th className="px-8 py-5 font-bold text-right">Value</th>
                   <th className="px-8 py-5 font-bold text-right">Remove</th>
@@ -435,6 +436,11 @@ function Portfolio() {
                             <div className="text-xs text-slate-400">{asset.name}</div>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-8 py-5 text-center">
+                        <span className="font-mono font-medium text-slate-300 text-left">
+                          {asset.fullExchangeName}
+                          </span>
                       </td>
                       <td className="px-8 py-5 text-center">
                         <span className="font-mono font-medium text-slate-300">
