@@ -37,7 +37,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI}
-      database: admin
+      database: mongodb
 
 application:
   client-origin-url: https://mchacks.benmusicgeek.synology.me
