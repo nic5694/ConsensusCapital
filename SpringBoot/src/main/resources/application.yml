@@ -36,7 +36,7 @@ spring:
       on-profile: prod
   data:
     mongodb:
-      uri: ${MONGODB_URI}
+      uri: ${MONGO_URI}
 
 application:
   client-origin-url: https://mchacks.benmusicgeek.synology.me
