@@ -19,20 +19,25 @@ public class AnalysisServiceImpl implements AnalysisService {
     private final GeminiService geminiService;
     private final PortfolioService portfolioService;
 
-    private static final double SIMILARITY_THRESHOLD = 0.80;
+    private static final double SIMILARITY_THRESHOLD = 0.717;
+
+    private static final double UNIQUENESS_MARGIN = 0.02;
 
     @Override
-    public void analyzeData(String userId) {
-        List<PolyMarketInfoDTO> events = polyMarketService.getMarketInfo();
+    public List<PolyMarketInfoDTO> analyzeData(String userId) {
 
+        List<PolyMarketInfoDTO> events = polyMarketService.getMarketInfo();
         PortfolioResponse portfolio = portfolioService.fetchPortfolio(userId);
 
         List<String> eventTexts = events.stream()
-                .map(e -> e.title() + "\n" + e.description() + "\nConsider this as a potential macroeconomic, regulatory, or technological event that could affect stock prices.")
+                .map(e -> e.title() + "\n" + e.description())
                 .toList();
 
-        List<String> assetTexts = Arrays.stream(portfolio.getAssets())
-                .map(asset -> String.join(" ", asset.getKeywords()) + "\nConsider this as a representation of the company's business, market position, and growth prospects.")
+       List<String> assetTexts = Arrays.stream(portfolio.getAssets())
+                .map(asset -> {
+                    String desc = asset.getDescription() == null ? "" : asset.getDescription();
+                    return String.join("\n", asset.getKeywords()) + "\n" + desc;
+                })
                 .toList();
 
         List<List<Double>> eventEmbeddings = geminiService.embed(eventTexts);
@@ -52,46 +57,60 @@ public class AnalysisServiceImpl implements AnalysisService {
             List<Double> eventVec = eventEmbeddings.get(i);
 
             double bestSim = -1.0;
+            double secondBestSim = -1.0;
             int bestAssetIndex = -1;
-            boolean thresholdHit = false;
 
             for (int j = 0; j < assetEmbeddings.size(); j++) {
                 double sim = cosineSimilarity(eventVec, assetEmbeddings.get(j));
 
                 if (sim > bestSim) {
+                    secondBestSim = bestSim;
                     bestSim = sim;
                     bestAssetIndex = j;
-                }
-
-                // EARLY STOP if any asset similarity is above threshold
-                if (sim >= SIMILARITY_THRESHOLD) {
-                    thresholdHit = true;
-                    bestSim = sim;          // keep the first hit score (or keep best so far)
-                    bestAssetIndex = j;
-                    break;
+                } else if (sim > secondBestSim) {
+                    secondBestSim = sim;
                 }
             }
 
-            if (thresholdHit) {
+            boolean passesThreshold = bestSim >= SIMILARITY_THRESHOLD;
+
+            boolean isUniqueMatch = (assetEmbeddings.size() <= 1)
+                    || ((bestSim - secondBestSim) >= UNIQUENESS_MARGIN);
+
+            if (passesThreshold && isUniqueMatch) {
                 matchedEvents.add(new EventMatch(
                         event.id(),
                         event.title(),
                         bestSim,
-                        bestAssetIndex
+                        secondBestSim,
+                        bestAssetIndex,
+                        i
                 ));
 
-                log.info("MATCH ✅ event='{}' sim={} matchedAssetIndex={}",
-                        event.title(), bestSim, bestAssetIndex);
+                log.info("MATCH ✅ event='{}' bestSim={} secondBestSim={} margin={} matchedAssetIndex={}",
+                        event.title(), bestSim, secondBestSim, (bestSim - secondBestSim), bestAssetIndex);
             } else {
-                log.info("NO MATCH ❌ event='{}' bestSim={}", event.title(), bestSim);
+                log.info("NO MATCH ❌ event='{}' bestSim={} secondBestSim={} margin={}",
+                        event.title(), bestSim, secondBestSim, (bestSim - secondBestSim));
             }
         }
-        log.info("Total matched events above threshold ({}): {}", SIMILARITY_THRESHOLD, matchedEvents.size());
+
+        log.info("Total matched events above threshold ({}), uniqueness margin ({}): {}",
+                SIMILARITY_THRESHOLD, UNIQUENESS_MARGIN, matchedEvents.size());
+
+        // Sort by strongest similarity first
+        matchedEvents.sort((a, b) -> Double.compare(b.bestSimilarity(), a.bestSimilarity()));
+
+        // Return events ordered by match strength
+        return matchedEvents.stream()
+                .map(match -> events.get(match.eventIndex()))
+                .filter(event -> {
+                    String titleLower = event.title().toLowerCase();
+                    return !(titleLower.contains(" vs ") || titleLower.contains(" vs. "));
+                })
+                .toList();
     }
 
-    /**
-     * Cosine similarity for float embeddings
-     */
     private double cosineSimilarity(List<Double> a, List<Double> b) {
         if (a.size() != b.size()) throw new IllegalArgumentException("Different vector sizes");
 
@@ -109,14 +128,12 @@ public class AnalysisServiceImpl implements AnalysisService {
         return denom == 0 ? 0 : dot / denom;
     }
 
-    /**
-     * Minimal structure to store results.
-     * You can turn this into an Entity / DTO as needed.
-     */
     public record EventMatch(
             String eventId,
             String eventTitle,
-            double similarity,
-            int matchedAssetIndex
+            double bestSimilarity,
+            double secondBestSimilarity,
+            int matchedAssetIndex,
+            int eventIndex
     ) {}
 }
