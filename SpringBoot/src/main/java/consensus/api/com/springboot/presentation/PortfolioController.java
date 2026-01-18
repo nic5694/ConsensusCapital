@@ -36,9 +36,8 @@ public class PortfolioController {
     }
 
     @DeleteMapping("/assets/{assetSymbol}" )
-    public void removeAssetFromPortfolio(@PathVariable String assetSymbol,
-                                         @AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public void removeAssetFromPortfolio(@PathVariable String assetSymbol) {
+        String userId = "test-user";
         portfolioService.removeAssetFromPortfolio(userId, assetSymbol);
     }
 }

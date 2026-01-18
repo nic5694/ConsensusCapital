@@ -51,7 +51,7 @@ dependencies {
     compileOnly "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-
+    implementation("org.apache.commons:commons-text:1.15.0")
 }
 
 

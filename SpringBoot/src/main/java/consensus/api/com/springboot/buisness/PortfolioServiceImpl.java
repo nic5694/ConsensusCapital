@@ -5,12 +5,11 @@ import consensus.api.com.springboot.data.PortfolioRepo;
 import consensus.api.com.springboot.presentation.request.AssetRequest;
 import consensus.api.com.springboot.presentation.responses.AssetResponse;
 import consensus.api.com.springboot.presentation.responses.PortfolioResponse;
-import consensus.api.com.springboot.presentation.responses.StockDTO;
+import consensus.api.com.springboot.buisness.DTO.StockDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -85,6 +84,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 
             keywords[0] = stockInfo.industry();
             keywords[1] = stockInfo.sector();
+
+
 
             asset.setKeywords(keywords);
             portfolio.getAssets().add(asset);

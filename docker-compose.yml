@@ -35,3 +35,10 @@ services:
       - stack.env
     ports:
       - "8090:3000"
+    
+  python:
+    build:
+      context: ./FastAPI
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
