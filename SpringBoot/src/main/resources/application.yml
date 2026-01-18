@@ -44,7 +44,7 @@ spring:
       authentication-database: admin
 
 application:
-  client-origin-url: https://mchacks.benmusicgeek.synology.me/
+  client-origin-url: https://mchacks.benmusicgeek.synology.me
 
 server:
   error:
