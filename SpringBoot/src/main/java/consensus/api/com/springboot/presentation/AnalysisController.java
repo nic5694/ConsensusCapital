@@ -22,8 +22,8 @@ public class AnalysisController {
     private final AnalysisService analysisService;
 
     @GetMapping("/summary")
-    public List<PolyMarketInfoDTO> getMarketSummary(@AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public List<PolyMarketInfoDTO> getMarketSummary() {
+        String userId = "user-user";
         return analysisService.analyzeData(userId);
     }
 

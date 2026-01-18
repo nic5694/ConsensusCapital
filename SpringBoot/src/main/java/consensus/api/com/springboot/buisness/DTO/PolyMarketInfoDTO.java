@@ -1,3 +1,10 @@
 package consensus.api.com.springboot.buisness.DTO;
 
-public record PolyMarketInfoDTO(String id, String title, String description) {}
+import java.util.List;
+
+public record PolyMarketInfoDTO(
+        String id,
+        String title,
+        String description,
+        List<MarketDTO> markets
+) {}
