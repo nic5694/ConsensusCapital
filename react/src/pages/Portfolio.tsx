@@ -41,10 +41,9 @@ function Portfolio() {
   async function searchTicker(query: string): Promise<TickerResult[]> {
     // Using allorigins CORS proxy
     const yahooUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`
-    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
 
     try {
-      const response = await fetch(proxyUrl)
+      const response = await fetch(yahooUrl)
 
       const data: YahooSearchResponse = await response.json()
 
