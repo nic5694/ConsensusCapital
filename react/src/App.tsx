@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { PortfolioProvider } from './contexts/PortfolioContext'
+import { AnalysisProvider } from './contexts/AnalysisContext'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -14,17 +15,19 @@ import { AuthenticationGuard } from "./guards/authentication-guard.tsx";
 function App() {
   return (
     <PortfolioProvider>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="portfolio" element={<AuthenticationGuard component={Portfolio} />} />
-          <Route path="dashboard" element={<AuthenticationGuard component={Dashboard} />} />
-          <Route path="risk-analysis" element={<AuthenticationGuard component={RiskAnalysis} />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
-        <Route path="/callback" element={<CallbackPage />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <AnalysisProvider>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="portfolio" element={<AuthenticationGuard component={Portfolio} />} />
+            <Route path="dashboard" element={<AuthenticationGuard component={Dashboard} />} />
+            <Route path="risk-analysis" element={<AuthenticationGuard component={RiskAnalysis} />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+          <Route path="/callback" element={<CallbackPage />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </AnalysisProvider>
     </PortfolioProvider>
   )
 }

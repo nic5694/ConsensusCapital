@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { usePortfolio } from '../contexts/PortfolioContext'
+import { useAnalysis } from '../contexts/AnalysisContext'
+import type { RiskAnalysisData } from '../contexts/AnalysisContext'
 import { useAuth } from 'react-oidc-context'
 import * as portfolioService from '../services/portfolioService'
 
@@ -23,13 +26,16 @@ type YahooSearchResponse = {
 }
 
 function Portfolio() {
-  const { assets, removeAsset, clearAssets, getAssetCount, setAssets } = usePortfolio()
+  const navigate = useNavigate()
+  const { assets, removeAsset, clearAssets, getAssetCount, setAssets, getTotalValue } = usePortfolio()
+  const { setAnalysisData, setIsLoading: setAnalysisLoading } = useAnalysis()
   const { user } = useAuth()
   const [query, setQuery] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('')
   const [searchResults, setSearchResults] = useState<TickerResult[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
+  const [generatingAnalysis, setGeneratingAnalysis] = useState<boolean>(false)
 
   async function searchTicker(query: string): Promise<TickerResult[]> {
     // Using allorigins CORS proxy
@@ -144,9 +150,109 @@ function Portfolio() {
     }
   }
 
-  const handleContinue = () => {
-    // TODO: Navigate to analysis page
-    console.log('Continue with assets:', assets)
+  const handleGenerateAnalysis = async () => {
+    setGeneratingAnalysis(true)
+    setAnalysisLoading(true)
+    
+    // Navigate to Risk Analysis page immediately
+    navigate('/risk-analysis')
+    
+    try {
+      const totalValue = getTotalValue()
+      
+      // Construct portfolio payload
+      const portfolioPayload = {
+        portfolioId: "PF-" + Math.random().toString(36).substring(2, 9).toUpperCase(),
+        userId: "user_" + Math.random().toString(36).substring(2, 9),
+        totalValue: totalValue,
+        assets: assets.map(asset => ({
+          symbol: asset.symbol,
+          name: asset.name,
+          quantity: asset.quantity,
+          value: asset.value || 0,
+          keywords: asset.keywords || [],
+          description: asset.description || ""
+        }))
+      }
+
+      // Start the pipeline
+      const startResponse = await fetch(
+        "https://api.gumloop.com/api/v1/start_pipeline?api_key=3e95818c061a45f7ab312cb2ddee32f9&user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&saved_item_id=tz7L5vc6mheecf3JtmXhsT",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(portfolioPayload),
+        }
+      )
+
+      if (!startResponse.ok) {
+        throw new Error(`HTTP error! status: ${startResponse.status}`)
+      }
+
+      const startData = await startResponse.json()
+      const { run_id } = startData
+
+      // Poll for the run status
+      const pollInterval = 2000 // Poll every 2 seconds
+      const maxAttempts = 60 // Max 2 minutes of polling
+      let attempts = 0
+
+      const pollRunStatus = async (): Promise<RiskAnalysisData> => {
+        while (attempts < maxAttempts) {
+          attempts++
+          
+          const pollResponse = await fetch(
+            `https://api.gumloop.com/api/v1/get_pl_run?user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&run_id=${run_id}`,
+            {
+              headers: {
+                "Authorization": `Bearer ${import.meta.env.VITE_GUMLOOP_BEARER_TOKEN}`,
+              },
+            }
+          )
+
+          if (!pollResponse.ok) {
+            throw new Error(`Polling error! status: ${pollResponse.status}`)
+          }
+
+          const runData = await pollResponse.json()
+          
+          // Check if the run is complete (state === "DONE")
+          if (runData.state === "DONE") {
+            // Extract the output from the response
+            const outputData = runData.outputs?.output
+            if (outputData) {
+              // The output is a JSON string wrapped in markdown code blocks
+              // Extract the JSON from the markdown format
+              const jsonMatch = outputData.match(/```json\n([\s\S]*?)\n```/)
+              if (jsonMatch && jsonMatch[1]) {
+                const parsedData = JSON.parse(jsonMatch[1])
+                return parsedData
+              }
+            }
+            return runData.outputs || runData
+          }
+          
+          if (runData.state === "FAILED") {
+            throw new Error("Pipeline run failed")
+          }
+
+          // Wait before next poll
+          await new Promise(resolve => setTimeout(resolve, pollInterval))
+        }
+        
+        throw new Error("Polling timeout - analysis is taking longer than expected")
+      }
+
+      const analysisResult = await pollRunStatus()
+      setAnalysisData(analysisResult)
+    } catch (error) {
+      console.error("Error generating analysis:", error)
+    } finally {
+      setGeneratingAnalysis(false)
+      setAnalysisLoading(false)
+    }
   }
 
   return (
@@ -316,11 +422,20 @@ function Portfolio() {
           <div className="flex flex-col items-center pt-8">
             <button
               className="w-full max-w-md bg-primary text-white py-4 rounded-2xl font-bold flex items-center justify-center space-x-3 shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:-translate-y-1 transition-all active:scale-[0.98] group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 glow-cyan"
-              onClick={handleContinue}
-              disabled={getAssetCount() === 0}
+              onClick={handleGenerateAnalysis}
+              disabled={getAssetCount() === 0 || generatingAnalysis}
             >
-              <span className="text-lg">Continue to Analysis</span>
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+              {generatingAnalysis ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin">refresh</span>
+                  <span className="text-lg">Generating Analysis...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-lg">Generate Analysis</span>
+                  <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">auto_awesome</span>
+                </>
+              )}
             </button>
             <p className="mt-6 text-[10px] text-slate-500 uppercase tracking-widest text-center max-w-xs leading-relaxed">
               Aggregating portfolio risk metrics using real-time market signals
