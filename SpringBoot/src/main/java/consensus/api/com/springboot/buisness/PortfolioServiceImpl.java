@@ -64,6 +64,15 @@ public class PortfolioServiceImpl implements PortfolioService {
                 return;
             }
 
+            // If asset already exists, update quantity
+            for (var asset : portfolio.getAssets()) {
+                if (asset.getSymbol().equalsIgnoreCase(assetRequest.getSymbol())) {
+                    asset.setQuantity(asset.getQuantity() + assetRequest.getQuantity());
+                    portfolioRepo.save(portfolio);
+                    return;
+                }
+            }
+
             var asset = assetRequest.toAsset();
             asset.setValue(stock.price());
             asset.setName(stock.name());

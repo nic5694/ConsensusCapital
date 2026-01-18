@@ -1,10 +1,14 @@
+---
+version: "3.9"
 services:
-
   backend:
-    build: ./SpringBoot/.
+    build:
+      context: ./SpringBoot/.
+      dockerfile: Dockerfile
     hostname: backend
+    platform: linux/amd64
     ports:
-      - "8080:8080"
+      - "9090:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
@@ -21,7 +25,6 @@ services:
       - "27017:27017"
 
   react-frontend:
-    image: frontend
     container_name: react-frontend
     build:
       context: ./react/.
@@ -29,4 +32,4 @@ services:
       args:
         - BUILD_MODE=development
     ports:
-      - '3000:3000'
+      - "8090:3000"
