@@ -56,41 +56,46 @@ public class PortfolioServiceImpl implements PortfolioService {
     @Override
     public void addAssetToPortfolio(String userId, AssetRequest assetRequest) {
         Portfolio portfolio = portfolioRepo.findByUserId(userId);
-        if (portfolio != null) {
 
-            StockDTO stock = stockService.searchAndGetPrice(assetRequest.getSymbol());
+        if (portfolio == null) {
+            createPortfolio(userId);
+        }
 
-            if (stock == null) {
+        portfolio = portfolioRepo.findByUserId(userId);
+
+        StockDTO stock = stockService.searchAndGetPrice(assetRequest.getSymbol());
+
+        if (stock == null) {
+            return;
+        }
+
+        // If asset already exists, update quantity
+        for (var asset : portfolio.getAssets()) {
+            if (asset.getSymbol().equalsIgnoreCase(assetRequest.getSymbol())) {
+                asset.setQuantity(asset.getQuantity() + assetRequest.getQuantity());
+                portfolioRepo.save(portfolio);
                 return;
             }
-
-            // If asset already exists, update quantity
-            for (var asset : portfolio.getAssets()) {
-                if (asset.getSymbol().equalsIgnoreCase(assetRequest.getSymbol())) {
-                    asset.setQuantity(asset.getQuantity() + assetRequest.getQuantity());
-                    portfolioRepo.save(portfolio);
-                    return;
-                }
-            }
-
-            var asset = assetRequest.toAsset();
-            asset.setValue(stock.price());
-            asset.setName(stock.name());
-            asset.setFullExchangeName(stock.fullExchangeName());
-
-            var stockInfo = stockService.searchAndGetInfo(assetRequest.getSymbol());
-
-            String[] keywords = new String[2];
-
-            keywords[0] = stockInfo.industry();
-            keywords[1] = stockInfo.sector();
-
-
-
-            asset.setKeywords(keywords);
-            portfolio.getAssets().add(asset);
-            portfolioRepo.save(portfolio);
         }
+
+        var asset = assetRequest.toAsset();
+        asset.setValue(stock.price());
+        asset.setName(stock.name());
+        asset.setFullExchangeName(stock.fullExchangeName());
+
+        var stockInfo = stockService.searchAndGetInfo(assetRequest.getSymbol());
+
+        String[] keywords = new String[2];
+
+        keywords[0] = stockInfo.industry();
+        keywords[1] = stockInfo.sector();
+
+        String description = stockService.getStockSummary(assetRequest.getSymbol());
+
+        asset.setDescription(description);
+        asset.setKeywords(keywords);
+        portfolio.getAssets().add(asset);
+        portfolioRepo.save(portfolio);
 
     }
 

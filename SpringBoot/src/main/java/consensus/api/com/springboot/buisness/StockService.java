@@ -7,4 +7,6 @@ public interface StockService {
     StockDTO searchAndGetPrice(String stockSymbol);
 
     StockInfoDTO searchAndGetInfo(String stockSymbol);
+
+    String getStockSummary(String stockSymbol);
 }

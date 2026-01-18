@@ -52,6 +52,11 @@ server:
       enabled: false
   port: 8080
 
+app:
+  python-service:
+    host: localhost
+    port: 8000
+
   web:
     resources:
       add-mappings: false

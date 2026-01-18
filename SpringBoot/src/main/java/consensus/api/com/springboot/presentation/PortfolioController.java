@@ -29,15 +29,14 @@ public class PortfolioController {
     }
 
     @PostMapping("/assets")
-    public void addAssetToPortfolio(@RequestBody AssetRequest assetRequest,
-                                    @AuthenticationPrincipal Jwt user) {
+    public void addAssetToPortfolio(@RequestBody AssetRequest assetRequest, @AuthenticationPrincipal Jwt user) {
         String userId = user.getSubject();
         portfolioService.addAssetToPortfolio(userId, assetRequest);
     }
 
     @DeleteMapping("/assets/{assetSymbol}" )
-    public void removeAssetFromPortfolio(@PathVariable String assetSymbol) {
-        String userId = "test-user";
+    public void removeAssetFromPortfolio(@PathVariable String assetSymbol, @AuthenticationPrincipal Jwt user) {
+        String userId = user.getSubject();
         portfolioService.removeAssetFromPortfolio(userId, assetSymbol);
     }
 }

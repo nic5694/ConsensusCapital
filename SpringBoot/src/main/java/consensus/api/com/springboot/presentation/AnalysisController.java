@@ -2,6 +2,7 @@ package consensus.api.com.springboot.presentation;
 
 
 import consensus.api.com.springboot.buisness.AnalysisService;
+import consensus.api.com.springboot.buisness.DTO.PolyMarketInfoDTO;
 import consensus.api.com.springboot.buisness.PortfolioService;
 import consensus.api.com.springboot.presentation.request.AssetRequest;
 import consensus.api.com.springboot.presentation.responses.PortfolioResponse;
@@ -10,18 +11,20 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/analysis")
-@CrossOrigin(origins = {"http://localhost:3000", "https://mchacks.benmusicgeek.synology.me"})
+@CrossOrigin(origins = {"http://localhost:8090", "https://mchacks.benmusicgeek.synology.me"})
 public class AnalysisController {
 
     private final AnalysisService analysisService;
 
     @GetMapping("/summary")
-    public void getMarketSummary() {
-        String userId = "test-user";
-        analysisService.analyzeData(userId);
+    public List<PolyMarketInfoDTO> getMarketSummary(@AuthenticationPrincipal Jwt user) {
+        String userId = user.getSubject();
+        return analysisService.analyzeData(userId);
     }
 
 }

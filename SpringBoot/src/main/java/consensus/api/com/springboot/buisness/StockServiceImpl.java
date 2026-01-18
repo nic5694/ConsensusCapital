@@ -103,4 +103,25 @@ public class StockServiceImpl implements StockService {
             return null;
         }
     }
+
+    @Override
+    public String getStockSummary(String stockSymbol) {
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            String searchUrl = UriComponentsBuilder
+                    .fromHttpUrl("http://python:8000/summary/" + stockSymbol)
+                    .toUriString();
+
+            ResponseEntity<String> response =
+                    restTemplate.exchange(searchUrl, HttpMethod.GET, entity, String.class);
+
+            return response.getBody();
+
+        } catch (Exception e) {
+            log.error("Error while fetching stock info for symbol: {}", stockSymbol, e);
+            return null;
+        }
+    }
 }
