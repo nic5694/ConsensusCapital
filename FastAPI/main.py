@@ -4,8 +4,8 @@ import yfinance as yf
 
 app = FastAPI()
 
-@app.get("/summary/{ticker}")
-async def get_long_business_summary(ticker_symbol):
+@app.get("/summary/{ticker_symbol}")
+async def get_long_business_summary(ticker_symbol: str):
     ticker = yf.Ticker(ticker_symbol)
     return ticker.get_info().get("longBusinessSummary")
 
