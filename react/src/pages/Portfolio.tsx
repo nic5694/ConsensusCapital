@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { usePortfolio } from '../contexts/PortfolioContext'
 import { useAnalysis } from '../contexts/AnalysisContext'
-import type { RiskAnalysisData } from '../contexts/AnalysisContext'
+import type { RiskAnalysisData, InterestingEvent } from '../contexts/AnalysisContext'
 import { useAuth } from 'react-oidc-context'
 import * as portfolioService from '../services/portfolioService'
 
@@ -28,7 +28,7 @@ type YahooSearchResponse = {
 function Portfolio() {
   const navigate = useNavigate()
   const { assets, removeAsset, clearAssets, getAssetCount, setAssets, getTotalValue } = usePortfolio()
-  const { setAnalysisData, setIsLoading: setAnalysisLoading } = useAnalysis()
+  const { setAnalysisData, setInterestingEvents, setIsLoading: setAnalysisLoading } = useAnalysis()
   const { user } = useAuth()
   const [query, setQuery] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('')
@@ -175,78 +175,127 @@ function Portfolio() {
         }))
       }
 
-      // Start the pipeline
-      const startResponse = await fetch(
-        "https://api.gumloop.com/api/v1/start_pipeline?api_key=3e95818c061a45f7ab312cb2ddee32f9&user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&saved_item_id=tz7L5vc6mheecf3JtmXhsT",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(portfolioPayload),
-        }
-      )
+      console.log("Starting analysis generation from Portfolio...")
 
-      if (!startResponse.ok) {
-        throw new Error(`HTTP error! status: ${startResponse.status}`)
-      }
-
-      const startData = await startResponse.json()
-      const { run_id } = startData
-
-      // Poll for the run status
-      const pollInterval = 2000 // Poll every 2 seconds
-      const maxAttempts = 60 // Max 2 minutes of polling
-      let attempts = 0
-
-      const pollRunStatus = async (): Promise<RiskAnalysisData> => {
-        while (attempts < maxAttempts) {
-          attempts++
-          
-          const pollResponse = await fetch(
-            `https://api.gumloop.com/api/v1/get_pl_run?user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&run_id=${run_id}`,
-            {
-              headers: {
-                "Authorization": `Bearer ${import.meta.env.VITE_GUMLOOP_BEARER_TOKEN}`,
-              },
-            }
-          )
-
-          if (!pollResponse.ok) {
-            throw new Error(`Polling error! status: ${pollResponse.status}`)
-          }
-
-          const runData = await pollResponse.json()
-          
-          // Check if the run is complete (state === "DONE")
-          if (runData.state === "DONE") {
-            // Extract the output from the response
-            const outputData = runData.outputs?.output
-            if (outputData) {
-              // The output is a JSON string wrapped in markdown code blocks
-              // Extract the JSON from the markdown format
-              const jsonMatch = outputData.match(/```json\n([\s\S]*?)\n```/)
-              if (jsonMatch && jsonMatch[1]) {
-                const parsedData = JSON.parse(jsonMatch[1])
-                return parsedData
+      // Start both analyses in parallel with independent error handling
+      const results = await Promise.allSettled([
+        // Gumloop risk analysis
+        (async () => {
+          try {
+            console.log("Starting Gumloop pipeline...")
+            const startResponse = await fetch(
+              "https://api.gumloop.com/api/v1/start_pipeline?api_key=3e95818c061a45f7ab312cb2ddee32f9&user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&saved_item_id=tz7L5vc6mheecf3JtmXhsT",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(portfolioPayload),
               }
+            )
+
+            if (!startResponse.ok) {
+              throw new Error(`HTTP error! status: ${startResponse.status}`)
             }
-            return runData.outputs || runData
-          }
-          
-          if (runData.state === "FAILED") {
-            throw new Error("Pipeline run failed")
-          }
 
-          // Wait before next poll
-          await new Promise(resolve => setTimeout(resolve, pollInterval))
-        }
+            const startData = await startResponse.json()
+            const { run_id } = startData
+            console.log("Pipeline started with run_id:", run_id)
+
+            // Poll for the run status
+            const pollInterval = 2000
+            const maxAttempts = 60
+            let attempts = 0
+
+            while (attempts < maxAttempts) {
+              attempts++
+              
+              const pollResponse = await fetch(
+                `https://api.gumloop.com/api/v1/get_pl_run?user_id=2lqdNDT48JT5yZA37FqDARCeOnY2&run_id=${run_id}`,
+                {
+                  headers: {
+                    "Authorization": `Bearer ${import.meta.env.VITE_GUMLOOP_BEARER_TOKEN}`,
+                  },
+                }
+              )
+
+              if (!pollResponse.ok) {
+                throw new Error(`Polling error! status: ${pollResponse.status}`)
+              }
+
+              const runData = await pollResponse.json()
+              
+              if (runData.state === "DONE") {
+                console.log("Gumloop pipeline completed")
+                const outputData = runData.outputs?.output
+                if (outputData) {
+                  const jsonMatch = outputData.match(/```json\n([\s\S]*?)\n```/)
+                  if (jsonMatch && jsonMatch[1]) {
+                    return JSON.parse(jsonMatch[1])
+                  }
+                }
+                return runData.outputs || runData
+              }
+              
+              if (runData.state === "FAILED") {
+                throw new Error("Pipeline run failed")
+              }
+
+              await new Promise(resolve => setTimeout(resolve, pollInterval))
+            }
+            
+            throw new Error("Polling timeout - analysis is taking longer than expected")
+          } catch (error) {
+            console.error("Gumloop analysis error:", error)
+            throw error
+          }
+        })(),
         
-        throw new Error("Polling timeout - analysis is taking longer than expected")
+        // Fetch interesting events
+        (async () => {
+          try {
+            const url = `${import.meta.env.VITE_REACT_APP_API_SERVER_URL}/api/v1/analysis/summary`
+            console.log("Fetching events from:", url)
+            const response = await fetch(url, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${user?.access_token}`,
+                'Content-Type': 'application/json',
+              },
+            })
+            
+            console.log("Events API response status:", response.status)
+            
+            if (!response.ok) {
+              throw new Error(`Events API error! status: ${response.status}`)
+            }
+            
+            const data = await response.json()
+            console.log("Events API data received:", data)
+            return data
+          } catch (error) {
+            console.error("Events API error:", error)
+            throw error
+          }
+        })()
+      ])
+      
+      // Handle results from Promise.allSettled
+      const [analysisResult, eventsResult] = results
+      
+      if (analysisResult.status === 'fulfilled') {
+        console.log("Setting analysis data:", analysisResult.value)
+        setAnalysisData(analysisResult.value as RiskAnalysisData)
+      } else {
+        console.error("Analysis failed:", analysisResult.reason)
       }
-
-      const analysisResult = await pollRunStatus()
-      setAnalysisData(analysisResult)
+      
+      if (eventsResult.status === 'fulfilled') {
+        console.log("Setting interesting events:", eventsResult.value)
+        setInterestingEvents(eventsResult.value as InterestingEvent[])
+      } else {
+        console.error("Events fetch failed:", eventsResult.reason)
+      }
     } catch (error) {
       console.error("Error generating analysis:", error)
     } finally {

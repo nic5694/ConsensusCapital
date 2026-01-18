@@ -11,6 +11,12 @@ export interface ActionableInsight {
   suggested_action: 'IGNORE' | 'MONITOR' | 'ACT';
 }
 
+export interface InterestingEvent {
+  id: string;
+  title: string;
+  description: string;
+}
+
 export interface PortfolioSummary {
   risk_profile: string;
   primary_sector_exposure: string[];
@@ -24,6 +30,8 @@ export interface RiskAnalysisData {
 type AnalysisContextType = {
   analysisData: RiskAnalysisData | null;
   setAnalysisData: (data: RiskAnalysisData | null) => void;
+  interestingEvents: InterestingEvent[];
+  setInterestingEvents: (events: InterestingEvent[]) => void;
   clearAnalysis: () => void;
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
@@ -35,15 +43,19 @@ const AnalysisContext = createContext<AnalysisContextType | undefined>(
 
 export function AnalysisProvider({ children }: { children: ReactNode }) {
   const [analysisData, setAnalysisData] = useState<RiskAnalysisData | null>(null);
+  const [interestingEvents, setInterestingEvents] = useState<InterestingEvent[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const clearAnalysis = () => {
     setAnalysisData(null);
+    setInterestingEvents([]);
   };
 
   const value: AnalysisContextType = {
     analysisData,
     setAnalysisData,
+    interestingEvents,
+    setInterestingEvents,
     clearAnalysis,
     isLoading,
     setIsLoading,
