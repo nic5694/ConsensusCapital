@@ -181,3 +181,5 @@ backend/temp.jpg
 terraform/terraform.tfvars
 
 package-lock.json
+
+stack.env

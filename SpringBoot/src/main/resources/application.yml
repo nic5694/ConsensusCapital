@@ -13,7 +13,7 @@ spring:
       authentication-database: admin
 
 application:
-  client-origin-url: http://localhost:3000
+  client-origin-url: http://localhost:8090
 
 server:
   error:
