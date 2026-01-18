@@ -27,9 +27,10 @@ services:
       - "27017:27017"
 
   react-frontend:
+    image: react-frontend
     container_name: react-frontend
     build:
-      context: ./react/.
+      context: ./react
       dockerfile: Dockerfile
       args:
         - BUILD_MODE=production
