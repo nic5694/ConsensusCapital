@@ -6,7 +6,7 @@ import * as portfolioService from '../services/portfolioService'
 
 function Dashboard() {
   const { assets, getTotalValue, getAssetCount, removeAsset } = usePortfolio()
-  const { user, signoutRedirect } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   const totalValue = getTotalValue()
@@ -195,7 +195,7 @@ function Dashboard() {
                     <div className="relative size-48">
                       <svg className="size-full transform -rotate-90" viewBox="0 0 36 36">
 
-                        {donutSegments.map((segment, _) => (
+                        {donutSegments.map((segment) => (
                           <circle
                             key={segment.symbol}
                             cx="18"
