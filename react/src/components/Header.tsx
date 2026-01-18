@@ -15,20 +15,14 @@ function Header() {
       <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 flex-shrink-0">
           <div className="text-primary">
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              viewBox="0 0 48 48"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"
-                fill="currentColor"
-              ></path>
-            </svg>
+            <img
+              src="https://res.cloudinary.com/dfr0s6nvh/image/upload/v1768732129/logo2_oai2k6.png"
+              alt="Consensus Capital logo"
+              className="w-14 h-14 object-contain"
+            />
           </div>
           <h2 className="text-xl font-bold tracking-tight whitespace-nowrap">
-            CONSENSUS-CAPITAL
+            CONSENSUS CAPITAL
           </h2>
         </Link>
         {isAuthenticated && (
