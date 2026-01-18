@@ -58,12 +58,6 @@ function Dashboard() {
     return colors[index % colors.length]
   }
 
-  const handleLogout = () => {
-    signoutRedirect({
-      post_logout_redirect_uri: window.location.origin + '/login'
-    })
-  }
-
   // Calculate donut chart segments
   let cumulativePercent = 0
   const donutSegments = chartData.map((asset, index) => {
@@ -200,7 +194,8 @@ function Dashboard() {
                   <div className="flex items-center gap-16 w-full justify-center">
                     <div className="relative size-48">
                       <svg className="size-full transform -rotate-90" viewBox="0 0 36 36">
-                        {donutSegments.map((segment, index) => (
+
+                        {donutSegments.map((segment, _) => (
                           <circle
                             key={segment.symbol}
                             cx="18"
