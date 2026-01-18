@@ -1,12 +1,25 @@
-import scipy
 import numpy as np
+from scipy.stats import pearsonr
 
-def max_norm_correlate(a, b):
-    # normalize
-    a_norm = (a - a.mean()) / a.std()
-    b_norm = (b - b.mean()) / b.std()
+def max_norm_correlate(stock, market, max_lag=7, lag_penalty=0.1):
+    # returns
+    x = np.diff(np.log(stock))
+    y = np.diff(np.log(market))
 
-    corr = scipy.signal.correlate(a_norm, b_norm, mode='full') / len(a)
-    # max value corresponds to strongest correlation at any lag
-    max_corr = np.max(corr)
-    return max_corr
+    best = 0
+    for lag in range(-max_lag, max_lag + 1):
+        if lag < 0:
+            xs, ys = x[:lag], y[-lag:]
+        elif lag > 0:
+            xs, ys = x[lag:], y[:-lag]
+        else:
+            xs, ys = x, y
+        
+        n = min(len(xs), len(ys))
+        if n < 5:
+            continue
+
+        r, _ = pearsonr(xs[:n], ys[:n])
+        best = max(best, abs(r))
+
+    return best

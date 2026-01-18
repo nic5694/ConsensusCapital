@@ -23,13 +23,13 @@ def get_top_markets(k, resample_interval="h"):
             hresp = requests.get(history_url, params={"market": yes_token_id, "interval": "max"}, timeout=5)
             hresp.raise_for_status()
             raw_history = hresp.json().get("history", []) or []
-            if not raw_history:
+            if not raw_history: # history doesn't exist
                 market["history"] = []
                 continue
 
-            # Build a DataFrame, set datetime index, resample and take mean
+            # DataFrame, set datetime as index, resample and take mean
             df = pd.DataFrame(raw_history)
-            df["t"] = pd.to_datetime(df["t"], unit="s")   # use unit='ms' if timestamps are ms
+            df["t"] = pd.to_datetime(df["t"], unit="s")
             df = df.set_index("t")
             df = df.resample(resample_interval).mean()
 
@@ -48,17 +48,19 @@ def get_top_markets(k, resample_interval="h"):
 
 def get_top_correlating_markets(stock_history, num_markets):
     top_markets = get_top_markets(50000, "h")
-    #print(top_markets[0])
+
     for market in tqdm(top_markets):
         df = pd.DataFrame(market["history"])
-        # print(df)
+
         if df.empty:
             market["correlation"] = 0
         else:
             correlation = max_norm_correlate(stock_history["Close"], df["p"])
             market["correlation"] = correlation
     
-    top_markets_df = pd.DataFrame(top_markets).sort_values("correlation", ascending=False)
+    top_markets_df = pd.DataFrame(top_markets)
+    top_markets_df["abs_correlation"] = top_markets_df["correlation"].abs()
+    top_markets_df = top_markets_df.sort_values("abs_correlation", ascending=False)
     keep_cols = ["question", "slug", "category", "description", "history", "correlation", "abs_correlation"]
     top_markets_df = top_markets_df.loc[:, top_markets_df.columns.isin(keep_cols)]
     return top_markets_df[:num_markets]

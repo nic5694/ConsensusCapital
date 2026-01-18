@@ -12,7 +12,7 @@ history = ticker.history(period="1mo")  # data for the last month
 
 history = history.resample("h").mean()
 
-history["Close"].interpolate(method="time", inplace=True)  # optional linear interpolation
+history["Close"].interpolate(method="time", inplace=True)  # fill NaNs
 
 df = get_top_correlating_markets(history, 100)
 df.to_csv("correlators.csv", sep='\t', encoding='utf-8')
