@@ -13,16 +13,11 @@ type TickerResult = {
   exchange: string;
 }
 
-type YahooQuote = {
-  symbol: string;
-  quoteType: string;
-  shortname?: string;
-  longname?: string;
-  exchange: string;
-}
-
-type YahooSearchResponse = {
-  quotes?: YahooQuote[];
+type StockDTO = {
+  symbol: string
+  name: string | null
+  fullExchangeName: string | null
+  price: number | null
 }
 
 function Portfolio() {
@@ -39,32 +34,39 @@ function Portfolio() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   async function searchTicker(query: string): Promise<TickerResult[]> {
-    // Using allorigins CORS proxy
-    const yahooUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`
+    if (!query.trim()) return []
+
+    const baseUrl = import.meta.env.VITE_REACT_APP_API_SERVER_URL
+    const url = `${baseUrl}/api/v1/yahoo/symbols?query=${encodeURIComponent(query)}`
 
     try {
-      const response = await fetch(yahooUrl)
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
 
-      const data: YahooSearchResponse = await response.json()
+      if (!response.ok) {
+        console.error("Yahoo symbols API error:", response.status)
+        return []
+      }
 
-      if (!data.quotes) return []
-      console.log("quotes: " + data.quotes)
-      const results = data.quotes
-        .filter(item => item.quoteType === 'EQUITY' || item.quoteType === 'ETF' || item.quoteType === 'CRYPTOCURRENCY')
-        .map(item => ({
-          symbol: item.symbol,
-          name: item.shortname ?? item.longname ?? item.symbol,
-          exchange: item.exchange
-        }))
+      const data: StockDTO[] = await response.json()
+
+      const results: TickerResult[] = (data ?? []).map((item) => ({
+        symbol: item.symbol,
+        name: item.name ?? item.symbol,
+        exchange: item.fullExchangeName ?? "",
+      }))
 
       // Remove duplicates by symbol
-      const uniqueResults = results.filter((result, index, self) =>
-        index === self.findIndex((r) => r.symbol === result.symbol)
+      return results.filter(
+          (result, index, self) =>
+              index === self.findIndex((r) => r.symbol === result.symbol)
       )
-
-      return uniqueResults
     } catch (error) {
-      console.error('Error searching ticker:', error)
+      console.error("Error searching ticker:", error)
       return []
     }
   }

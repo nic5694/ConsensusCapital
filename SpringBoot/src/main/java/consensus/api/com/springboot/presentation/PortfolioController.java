@@ -42,4 +42,5 @@ public class PortfolioController {
         String userId = user.getSubject();
         portfolioService.removeAssetFromPortfolio(userId, assetSymbol);
     }
+
 }

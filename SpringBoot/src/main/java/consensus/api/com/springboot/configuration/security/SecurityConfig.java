@@ -22,8 +22,8 @@ public class SecurityConfig {
     public SecurityFilterChain httpSecurity(final HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/profile").permitAll()
-                        .anyRequest().permitAll())
+                        .requestMatchers("/api/v1/yahoo/symbols").permitAll()
+                        .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2
