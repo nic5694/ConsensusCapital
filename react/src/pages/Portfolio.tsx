@@ -23,7 +23,7 @@ type YahooSearchResponse = {
 }
 
 function Portfolio() {
-  const { assets, addAsset, removeAsset, clearAssets, getAssetCount, updateAsset } = usePortfolio()
+  const { assets, removeAsset, clearAssets, getAssetCount, setAssets } = usePortfolio()
   const { user } = useAuth()
   const [query, setQuery] = useState<string>('')
   const [quantity, setQuantity] = useState<string>('')
@@ -100,40 +100,19 @@ function Portfolio() {
     try {
       await portfolioService.addAsset(token, symbol, parseFloat(quantity))
       
-      // Add asset to context after successful DB operation
-      addAsset({
-        symbol: symbol,
-        name: name,
-        quantity: parseFloat(quantity),
-        value: undefined
-      })
-    } catch (error) {
-      console.error(`Error adding asset to database:`, error)
-      return // Don't proceed if DB operation failed
-    }
+      // Clear form immediately for better UX
+      setQuery('')
+      setQuantity('')
+      setSearchResults([])
 
-    // Clear form immediately for better UX
-    setQuery('')
-    setQuantity('')
-    setSearchResults([])
-
-    // Fetch stock price in the background and update
-    try {
-      const yahooUrl = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yahooUrl)}`
+      // Refetch portfolio to get updated data with prices from backend
+      const portfolioResponse = await portfolioService.getPortfolio(token)
       
-      const response = await fetch(proxyUrl)
-      const data = await response.json()
-      
-      if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-        const price = data.chart.result[0].meta.regularMarketPrice
-        console.log(`Fetched price for ${symbol}: $${price}`)
-        
-        // Update the asset with the fetched price
-        updateAsset(symbol, { value: price })
+      if (portfolioResponse.data && portfolioResponse.data.assets) {
+        setAssets(portfolioResponse.data.assets)
       }
     } catch (error) {
-      console.error(`Error fetching price for ${symbol}:`, error)
+      console.error(`Error adding asset to database:`, error)
     }
   }
 
@@ -155,10 +134,12 @@ function Portfolio() {
     const token = user?.access_token || ''
     
     try {
-      // Clear from database first
-      await portfolioService.clearAssets(token)
+      // Delete each asset individually from database
+      for (const asset of assets) {
+        await portfolioService.removeAsset(token, asset.symbol)
+      }
       
-      // Clear from context after successful DB operation
+      // Clear from context after all DB operations succeed
       clearAssets()
     } catch (error) {
       console.error(`Error clearing assets from database:`, error)
@@ -253,7 +234,7 @@ function Portfolio() {
                   onClick={handleAddAsset}
                   disabled={!query || !quantity}
                 >
-                  <span className="ml-1 md:hidden lg:inline">Add</span>
+                  <span>Add</span>
                 </button>
               </div>
             </div>

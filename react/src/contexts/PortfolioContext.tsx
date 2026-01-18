@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import { useAuth } from 'react-oidc-context'
+import * as portfolioService from '../services/portfolioService'
 
 export type Asset = {
   symbol: string
@@ -25,6 +27,30 @@ const PortfolioContext = createContext<PortfolioContextType | undefined>(undefin
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [assets, setAssets] = useState<Asset[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const { isAuthenticated, user } = useAuth()
+
+  // Fetch portfolio data on mount or when authentication status changes
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      if (isAuthenticated && user?.access_token && assets.length === 0 && !isLoading) {
+        setIsLoading(true)
+        try {
+          const portfolioResponse = await portfolioService.getPortfolio(user.access_token)
+          
+          if (portfolioResponse.data && portfolioResponse.data.assets) {
+            setAssets(portfolioResponse.data.assets)
+          }
+        } catch (error) {
+          console.error('Error fetching portfolio data:', error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    fetchPortfolio()
+  }, [isAuthenticated, user, assets.length, isLoading])
 
   const addAsset = (asset: Asset) => {
     setAssets((prev) => {

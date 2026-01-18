@@ -24,7 +24,8 @@ function Header() {
         </Link>
         <nav className="hidden md:flex items-center gap-10 flex-shrink-0">
           <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/">Home</Link>
-          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/portfolio">Portfolio</Link>
+          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/dashboard">Dashboard</Link>
+          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/portfolio">Manage</Link>
           <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Risk Engine</a>
           <a className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" href="#">Docs</a>
         </nav>

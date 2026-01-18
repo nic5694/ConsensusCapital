@@ -63,7 +63,7 @@ function Home() {
                                         <AuthButtons />
                                         <button 
                                             className="w-full bg-emerald-500 text-white py-3 px-6 rounded-xl font-bold flex items-center justify-center hover:bg-emerald-600 transition-all active:scale-95"
-                                            onClick={() => navigate('/portfolio')}
+                                            onClick={() => navigate('/dashboard')}
                                         >
                                             Get Started
                                         </button>

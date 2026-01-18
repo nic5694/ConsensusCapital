@@ -4,6 +4,7 @@ import Layout from './components/Layout'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Portfolio from './pages/Portfolio'
+import Dashboard from './pages/Dashboard'
 import NotFound from './pages/NotFound'
 import './App.css'
 import { CallbackPage } from "./pages/Callback.tsx";
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="portfolio" element={<AuthenticationGuard component={Portfolio} />} />
+          <Route path="dashboard" element={<AuthenticationGuard component={Dashboard} />} />
           <Route path="*" element={<NotFound />} />
         </Route>
         <Route path="/callback" element={<CallbackPage />} />

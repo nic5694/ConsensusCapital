@@ -39,7 +39,7 @@ export const CallbackPage = () => {
                     console.error('Error initializing portfolio:', error);
                 }
                 
-                navigate("/", { replace: true });
+                navigate("/dashboard", { replace: true });
             }
         };
         
