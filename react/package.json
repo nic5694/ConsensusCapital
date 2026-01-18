@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
-    "build": "tsc -b && vite build",
+    "dev": "vite --port 3000 --host --mode dev",
+    "build": "tsc && vite build",
+    "build:development": "tsc && vite build --mode dev",
+    "build:production": "tsc && vite build --mode prod",
     "lint": "eslint .",
     "preview": "vite preview"
   },

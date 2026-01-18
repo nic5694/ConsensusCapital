@@ -1,0 +1,14 @@
+---
+# version: '3.8'
+
+services:
+  petclinicFrontend:
+    image: petclinic-frontend
+    container_name: petclinic-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILD_MODE=development
+    ports:
+      - '8090:3000' 

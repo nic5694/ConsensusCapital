@@ -32,7 +32,7 @@ services:
       context: ./react/.
       dockerfile: Dockerfile
       args:
-        - BUILD_MODE=development
+        - BUILD_MODE=production
     env_file:
       - stack.env
     ports:
