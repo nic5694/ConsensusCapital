@@ -1,11 +1,12 @@
 import requests
 import pandas as pd
+from tqdm import tqdm
 from correlate import * 
 
 
-def get_top_markets(k, resample_interval="H"):
+def get_top_markets(k, resample_interval="h"):
     gamma_url = "https://gamma-api.polymarket.com/markets"
-    resp = requests.get(gamma_url, params={"order": "volume", "ascending": "false", "limit": k, "active": "true"})
+    resp = requests.get(gamma_url, params={"order": "volume", "ascending": "false", "limit": k, "closed": "false", "active": "true"})
     resp.raise_for_status()
     markets = resp.json() or []
 
@@ -46,22 +47,20 @@ def get_top_markets(k, resample_interval="H"):
     return markets
 
 def get_top_correlating_markets(stock_history, num_markets):
-    top_markets = get_top_markets(100, "h")
+    top_markets = get_top_markets(50000, "h")
     #print(top_markets[0])
-    for market in top_markets:
+    for market in tqdm(top_markets):
         df = pd.DataFrame(market["history"])
         # print(df)
         if df.empty:
             market["correlation"] = 0
         else:
-            correlation = max_norm_correlate(stock_history["p"], df["p"])
+            correlation = max_norm_correlate(stock_history["Close"], df["p"])
             market["correlation"] = correlation
     
     top_markets_df = pd.DataFrame(top_markets).sort_values("correlation", ascending=False)
-    #keep_cols = top_markets_df.columns.difference(['question', 'slug', 'correlation'])
-
-    top_markets_df = top_markets_df[["question", "slug", "category", "description", "history", "correlation"]]
-
+    keep_cols = ["question", "slug", "category", "description", "history", "correlation", "abs_correlation"]
+    top_markets_df = top_markets_df.loc[:, top_markets_df.columns.isin(keep_cols)]
     return top_markets_df[:num_markets]
 
 if __name__ == "__main__":
