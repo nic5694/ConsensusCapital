@@ -40,5 +40,3 @@ services:
     build:
       context: ./FastAPI
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
