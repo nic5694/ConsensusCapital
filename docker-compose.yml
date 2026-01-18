@@ -3,6 +3,7 @@ services:
   backend:
     build: ./SpringBoot/.
     hostname: backend
+    platform: linux/amd64
     ports:
       - "8080:8080"
     environment:
