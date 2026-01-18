@@ -53,7 +53,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     }
 
     fetchPortfolio()
-  }, [isAuthenticated, user, assets.length, isLoading])
+  }, [isAuthenticated, user])
 
   const addAsset = (asset: Asset) => {
     setAssets((prev) => {
