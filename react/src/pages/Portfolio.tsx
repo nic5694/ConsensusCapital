@@ -91,8 +91,6 @@ function Portfolio() {
   const handleAddAsset = async () => {
     if (!query || !quantity) return
 
-    const selectedResult = searchResults.find(r => r.symbol === query)
-    const name = selectedResult?.name || query
     const symbol = query.toUpperCase()
     const token = user?.access_token || ''
 
