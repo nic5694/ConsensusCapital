@@ -14,11 +14,11 @@ function Header() {
     <header className="fixed top-0 left-0 right-0 w-full z-50 border-b border-solid border-[#283639] bg-background-dark/80 backdrop-blur-md px-6 lg:px-20 py-4">
       <div className="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-          <div className="text-primary">
+          <div className="text-primary w-8 h-8 overflow-hidden flex items-center justify-center">
             <img
               src="https://res.cloudinary.com/dfr0s6nvh/image/upload/v1768732129/logo2_oai2k6.png"
               alt="Consensus Capital logo"
-              className="w-14 h-14 object-contain"
+              className="w-full h-full object-cover transform scale-150"
             />
           </div>
           <h2 className="text-xl font-bold tracking-tight whitespace-nowrap">
