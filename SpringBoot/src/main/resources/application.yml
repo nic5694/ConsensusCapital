@@ -29,4 +29,34 @@ okta:
   oauth2:
     issuer: https://dev-7k6npylc7qks07rv.us.auth0.com/
     audience: https://api.consensus.com
-...
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  data:
+    mongodb:
+      host: mongo-db
+      port: 27017
+      database: db
+      username: root
+      password: pwd
+      authentication-database: admin
+
+application:
+  client-origin-url: https://mchacks.benmusicgeek.synology.me/
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+  port: 8080
+
+  web:
+    resources:
+      add-mappings: false
+
+okta:
+  oauth2:
+    issuer: https://dev-7k6npylc7qks07rv.us.auth0.com/
+    audience: https://api.consensus.com
