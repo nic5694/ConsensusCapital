@@ -96,16 +96,16 @@ function Dashboard() {
           </div>
 
           {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
             {/* Asset Breakdown Table */}
-            <div className="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden">
+            <div className="lg:col-span-2 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-800 flex justify-between items-center">
                 <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400">Asset Breakdown</h4>
                 <div className="text-xs text-slate-500">
                   {getAssetCount()} {getAssetCount() === 1 ? 'Asset' : 'Assets'}
                 </div>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto flex-1">
                 {assets.length === 0 ? (
                   <div className="p-12 text-center text-slate-500">
                     <span className="material-symbols-outlined text-5xl mb-4 opacity-20">inbox</span>
@@ -180,11 +180,11 @@ function Dashboard() {
             </div>
 
             {/* Distribution Chart */}
-            <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden h-full">
+            <div className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-800">
                 <h4 className="text-sm font-bold uppercase tracking-widest text-slate-400">Distribution</h4>
               </div>
-              <div className="p-8 flex items-center justify-center h-full min-h-[400px]">
+              <div className="p-8 flex items-center justify-center flex-1 min-h-[400px]">
                 {assets.length === 0 ? (
                   <div className="text-center text-slate-500">
                     <span className="material-symbols-outlined text-5xl mb-4 opacity-20">pie_chart</span>

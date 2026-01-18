@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePortfolio } from '../contexts/PortfolioContext';
 import { useAnalysis } from '../contexts/AnalysisContext';
 import { useAuth } from 'react-oidc-context';
@@ -13,6 +14,7 @@ interface NotableEvent {
 }
 
 const RiskAnalysis: React.FC = () => {
+  const navigate = useNavigate();
   const { assets, getTotalValue } = usePortfolio();
   const { analysisData, setAnalysisData, interestingEvents, setInterestingEvents, isLoading, setIsLoading } = useAnalysis();
   const { user } = useAuth();
@@ -277,9 +279,18 @@ const RiskAnalysis: React.FC = () => {
                         <span className="material-symbols-outlined text-[#0fa0bd]">event</span>
                         Notable Events
                       </h3>
-                      <span className="text-[10px] bg-[#0fa0bd]/20 text-[#0fa0bd] px-2 py-0.5 rounded-full font-bold">
-                        LIVE
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => navigate('/scenario-builder')}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-sm">analytics</span>
+                          What-If
+                        </button>
+                        <span className="text-[10px] bg-[#0fa0bd]/20 text-[#0fa0bd] px-2 py-0.5 rounded-full font-bold">
+                          LIVE
+                        </span>
+                      </div>
                     </div>
                     <div className="p-5 space-y-3 overflow-y-auto max-h-[600px]" style={{ scrollbarWidth: 'thin' }}>
                       {interestingEvents.length === 0 ? (

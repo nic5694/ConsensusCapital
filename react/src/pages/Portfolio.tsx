@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import { usePortfolio } from '../contexts/PortfolioContext'
@@ -36,6 +36,7 @@ function Portfolio() {
   const [loading, setLoading] = useState<boolean>(false)
   const [showDropdown, setShowDropdown] = useState<boolean>(false)
   const [generatingAnalysis, setGeneratingAnalysis] = useState<boolean>(false)
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   async function searchTicker(query: string): Promise<TickerResult[]> {
     // Using allorigins CORS proxy
@@ -69,8 +70,13 @@ function Portfolio() {
     }
   }
 
-  const handleSearchChange = async (value: string) => {
+  const handleSearchChange = (value: string) => {
     setQuery(value)
+    
+    // Clear any existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
     
     if (value.length < 1) {
       setSearchResults([])
@@ -78,15 +84,27 @@ function Portfolio() {
       return
     }
 
-    setLoading(true)
-    try {
-      const matches = await searchTicker(value)
-      setSearchResults(matches)
-      setShowDropdown(matches.length > 0)
-    } finally {
-      setLoading(false)
-    }
+    // Set a delay before triggering the search
+    searchTimeoutRef.current = setTimeout(async () => {
+      setLoading(true)
+      try {
+        const matches = await searchTicker(value)
+        setSearchResults(matches)
+        setShowDropdown(matches.length > 0)
+      } finally {
+        setLoading(false)
+      }
+    }, 500) // 500ms delay
   }
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleSelectTicker = (result: TickerResult) => {
     setQuery(result.symbol)
