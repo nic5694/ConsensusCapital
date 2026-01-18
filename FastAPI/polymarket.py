@@ -41,13 +41,14 @@ def get_top_markets(k, resample_interval="h"):
                 market["history"] = recs.to_dict(orient="records")
             else:
                 market["history"] = []
+
         except Exception:
             market["history"] = []
 
     return markets
 
 def get_top_correlating_markets(stock_history, num_markets):
-    top_markets = get_top_markets(50000, "h")
+    top_markets = get_top_markets(5000, "h")
 
     for market in tqdm(top_markets):
         df = pd.DataFrame(market["history"])
