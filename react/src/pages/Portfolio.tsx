@@ -378,12 +378,6 @@ function Portfolio() {
                     ))}
                   </div>
                 )}
-                
-                {loading && (
-                  <div className="absolute right-4 top-[42px] text-primary">
-                    <span className="material-icons-round animate-spin text-sm">refresh</span>
-                  </div>
-                )}
               </div>
               
               <div className="md:col-span-4">

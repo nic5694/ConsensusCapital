@@ -4,7 +4,7 @@ const AuthButtons = () => {
     const auth = useAuth();
 
     if (auth.isLoading) {
-        return <div>Loading authentication state...</div>;
+        return <div>Loading...</div>;
     }
 
     if (auth.error) {
