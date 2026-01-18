@@ -36,6 +36,7 @@ function Header() {
           <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/">Home</Link>
           <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/dashboard">Dashboard</Link>
           <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/portfolio">Manage</Link>
+          <Link className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap" to="/risk-analysis">Risk Analysis</Link>
         </nav>
         <div className="flex gap-4 flex-shrink-0">
           {isAuthenticated ? (

@@ -42,7 +42,7 @@ function Portfolio() {
       const data: YahooSearchResponse = await response.json()
 
       if (!data.quotes) return []
-
+      console.log("quotes: " + data.quotes)
       const results = data.quotes
         .filter(item => item.quoteType === 'EQUITY' || item.quoteType === 'ETF' || item.quoteType === 'CRYPTOCURRENCY')
         .map(item => ({

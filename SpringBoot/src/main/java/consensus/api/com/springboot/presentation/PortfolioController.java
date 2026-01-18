@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/portfolios")
-@CrossOrigin(origins = {"http://localhost:3000", "https://mchacks.benmusicgeek.synology.me"})
+@CrossOrigin(origins = {"http://localhost:8090", "https://mchacks.benmusicgeek.synology.me"})
 public class PortfolioController {
     private final PortfolioService portfolioService;
 

@@ -12,7 +12,7 @@ services:
     ports:
       - "9090:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - mongo-db
 
@@ -30,7 +30,7 @@ services:
       context: ./react
       dockerfile: Dockerfile
       args:
-        - BUILD_MODE=production
+        - BUILD_MODE=development
     env_file:
       - stack.env
     ports:
