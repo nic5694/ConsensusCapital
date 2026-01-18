@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/portfolios")
-@CrossOrigin(origins = {"http://localhost:3000", "https://mchacks.benmusicgeek.synology.me"})
+@CrossOrigin(origins = {"http://localhost:8090", "https://mchacks.benmusicgeek.synology.me"})
 public class PortfolioController {
     private final PortfolioService portfolioService;
 
@@ -36,9 +36,8 @@ public class PortfolioController {
     }
 
     @DeleteMapping("/assets/{assetSymbol}" )
-    public void removeAssetFromPortfolio(@PathVariable String assetSymbol,
-                                         @AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public void removeAssetFromPortfolio(@PathVariable String assetSymbol) {
+        String userId = "test-user";
         portfolioService.removeAssetFromPortfolio(userId, assetSymbol);
     }
 }

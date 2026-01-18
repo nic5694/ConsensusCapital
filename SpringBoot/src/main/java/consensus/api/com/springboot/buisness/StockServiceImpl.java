@@ -2,8 +2,8 @@ package consensus.api.com.springboot.buisness;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import consensus.api.com.springboot.presentation.responses.StockDTO;
-import consensus.api.com.springboot.presentation.responses.StockInfoDTO;
+import consensus.api.com.springboot.buisness.DTO.StockDTO;
+import consensus.api.com.springboot.buisness.DTO.StockInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -103,6 +103,4 @@ public class StockServiceImpl implements StockService {
             return null;
         }
     }
-
-
 }
