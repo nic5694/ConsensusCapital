@@ -6,7 +6,7 @@ services:
       context: ./SpringBoot/.
       dockerfile: Dockerfile
     hostname: backend
-    platform: linux/amd64
+    platform: linux/amd64`
     env_file:
       - stack.env
     ports:
@@ -20,6 +20,7 @@ services:
       context: ./react
       dockerfile: Dockerfile
       args:
+        - VITE_GUMLOOP_BEARER_TOKEN=${VITE_GUMLOOP_BEARER_TOKEN}
         - BUILD_MODE=production
     env_file:
       - stack.env
