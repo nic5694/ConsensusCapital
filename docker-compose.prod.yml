@@ -1,0 +1,42 @@
+---
+version: "3.9"
+services:
+  backend:
+    build:
+      context: ./SpringBoot/.
+      dockerfile: Dockerfile
+    hostname: backend
+    platform: linux/amd64
+    env_file:
+      - stack.env
+    ports:
+      - "9090:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    depends_on:
+      - mongo-db
+
+  mongo-db:
+    image: mongo
+    container_name: mongo-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pwd
+
+  react-frontend:
+    container_name: react-frontend
+    build:
+      context: ./react
+      dockerfile: Dockerfile
+      args:
+        - BUILD_MODE=production
+    env_file:
+      - stack.env
+    ports:
+      - "8090:3000"
+    
+  python:
+    build:
+      context: ./FastAPI
+      dockerfile: Dockerfile
