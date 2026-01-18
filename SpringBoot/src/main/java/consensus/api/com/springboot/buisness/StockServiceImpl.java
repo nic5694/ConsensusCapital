@@ -3,6 +3,7 @@ package consensus.api.com.springboot.buisness;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import consensus.api.com.springboot.presentation.responses.StockDTO;
+import consensus.api.com.springboot.presentation.responses.StockInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -54,8 +55,7 @@ public class StockServiceImpl implements StockService {
                     symbolQuery,
                     name,
                     metaNode.path("exchangeName").asText(null),
-                    price,
-                    metaNode.path("currency").asText(null)
+                    price
             );
 
         } catch (Exception e) {
@@ -63,5 +63,46 @@ public class StockServiceImpl implements StockService {
             return null;
         }
     }
+
+    @Override
+    public StockInfoDTO searchAndGetInfo(String symbolQuery) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        headers.set("Accept", "application/json");
+        headers.set("Accept-Language", "en-US,en;q=0.9");
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        try {
+            log.info("Searching stock info for symbol: {}", symbolQuery);
+
+            String searchUrl = UriComponentsBuilder
+                    .fromHttpUrl("https://query2.finance.yahoo.com/v1/finance/search")
+                    .queryParam("q", symbolQuery)
+                    .queryParam("quotesCount", 1)
+                    .queryParam("newsCount", 0)
+                    .toUriString();
+
+            ResponseEntity<String> response =
+                    restTemplate.exchange(searchUrl, HttpMethod.GET, entity, String.class);
+
+            JsonNode root = objectMapper.readTree(response.getBody());
+            JsonNode quoteNode = root
+                    .path("quotes")
+                    .path(0);
+
+            String sector = quoteNode.path("sector").asText(null);
+            String industry = quoteNode.path("industry").asText(null);
+
+            log.info("Stock info → symbol={}, sector={}, industry={}",
+                    symbolQuery, sector, industry);
+
+            return new StockInfoDTO(sector, industry);
+
+        } catch (Exception e) {
+            log.error("Error while fetching stock info for symbol: {}", symbolQuery, e);
+            return null;
+        }
+    }
+
 
 }

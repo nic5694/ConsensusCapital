@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -76,7 +77,16 @@ public class PortfolioServiceImpl implements PortfolioService {
             var asset = assetRequest.toAsset();
             asset.setValue(stock.price());
             asset.setName(stock.name());
+            asset.setFullExchangeName(stock.fullExchangeName());
 
+            var stockInfo = stockService.searchAndGetInfo(assetRequest.getSymbol());
+
+            String[] keywords = new String[2];
+
+            keywords[0] = stockInfo.industry();
+            keywords[1] = stockInfo.sector();
+
+            asset.setKeywords(keywords);
             portfolio.getAssets().add(asset);
             portfolioRepo.save(portfolio);
         }
