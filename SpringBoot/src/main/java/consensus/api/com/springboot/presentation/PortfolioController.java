@@ -17,26 +17,26 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @PostMapping()
-    public void createPortfolio(@AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public void createPortfolio() {
+        String userId = "user-user";
         portfolioService.createPortfolio(userId);
     }
 
     @GetMapping
-    public PortfolioResponse fetchPortfolio(@AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public PortfolioResponse fetchPortfolio() {
+        String userId = "user-user";
         return portfolioService.fetchPortfolio(userId);
     }
 
     @PostMapping("/assets")
-    public void addAssetToPortfolio(@RequestBody AssetRequest assetRequest, @AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public void addAssetToPortfolio(@RequestBody AssetRequest assetRequest) {
+        String userId = "user-user";
         portfolioService.addAssetToPortfolio(userId, assetRequest);
     }
 
     @DeleteMapping("/assets/{assetSymbol}" )
-    public void removeAssetFromPortfolio(@PathVariable String assetSymbol, @AuthenticationPrincipal Jwt user) {
-        String userId = user.getSubject();
+    public void removeAssetFromPortfolio(@PathVariable String assetSymbol) {
+        String userId = "user-user";
         portfolioService.removeAssetFromPortfolio(userId, assetSymbol);
     }
 }
