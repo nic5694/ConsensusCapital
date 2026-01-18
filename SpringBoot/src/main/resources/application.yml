@@ -36,12 +36,7 @@ spring:
       on-profile: prod
   data:
     mongodb:
-      host: consensuscapital.thfp82y.mongodb.net
-      port: 27017
-      database: admin
-      username: reader
-      password: ${MONGO_PWD}
-      authentication-database: admin
+      uri: mongodb+srv://reader:${MONGO_PWD}@consensuscapital.thfp82y.mongodb.net/admin?retryWrites=true&w=majority
 
 application:
   client-origin-url: https://mchacks.benmusicgeek.synology.me
