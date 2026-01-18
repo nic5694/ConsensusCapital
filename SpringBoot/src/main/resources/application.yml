@@ -38,3 +38,17 @@ spring:
 application:
   client-origin-url: https://mchacks.benmusicgeek.synology.me
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+  port: 8080
+
+  web:
+    resources:
+      add-mappings: false
+
+okta:
+  oauth2:
+    issuer: https://dev-7k6npylc7qks07rv.us.auth0.com/
+    audience: https://api.consensus.com
