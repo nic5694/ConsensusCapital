@@ -32,4 +32,4 @@ services:
       args:
         - BUILD_MODE=development
     ports:
-      - "8000:3000"
+      - "8090:3000"
