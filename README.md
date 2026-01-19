@@ -1,8 +1,8 @@
 # 🧠📈 Consensus Capital
 
 <p align="center">
-  <img src="https://img.shields.io/badge/McHacks%20Winner-Auth0%20Prize-gold?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/McHacks%20Winner-Best%20Project%20Using%20Gumloop-blueviolet?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/McHacks%2013%20Winner-Auth0%20Prize-gold?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/McHacks%2013%20Winner-Best%20Project%20Using%20Gumloop-blueviolet?style=for-the-badge" />
 </p>
 
 <p align="center">
@@ -19,10 +19,8 @@ By combining **Polymarket prediction data**, **semantic vector search**, and **A
 
 ## 🏆 Hackathon Wins
 
-- 🥇 **McHacks — Auth0 Prize Winner**
-- 🥇 **McHacks — Best Project Using Gumloop**
-
-These awards recognize both our **security-first architecture** and our **advanced AI orchestration**.
+- 🥇 **McHacks 13 — Auth0 Prize Winner**
+- 🥇 **McHacks 13 — Best Project Using Gumloop**
 
 
 
