@@ -1,4 +1,4 @@
-# 🧠📈 Consensus Capital
+# Consensus Capital
 
 <p align="center">
   <img src="https://img.shields.io/badge/McHacks%2013%20Winner-Auth0%20Prize-gold?style=for-the-badge" />
