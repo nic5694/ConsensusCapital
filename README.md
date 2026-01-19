@@ -1,4 +1,4 @@
-# Consensus Capital 💵
+# Consensus Capital 
 
 
 <p align="center">
