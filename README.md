@@ -9,13 +9,13 @@
   <img src="https://img.shields.io/badge/Status-Hackathon%20Winner-success?style=flat-square" />
 </p>
 
----
+
 
 **Consensus Capital** bridges traditional financial analysis with real-time prediction market probabilities to reveal hidden macro risks and non-obvious correlations in investment portfolios.
 
 By combining **Polymarket prediction data**, **semantic vector search**, and **AI-driven workflows**, Consensus Capital gives traders a probabilistic edge that charts and earnings reports alone can’t provide.
 
----
+
 
 ## 🏆 Hackathon Wins
 
@@ -24,7 +24,7 @@ By combining **Polymarket prediction data**, **semantic vector search**, and **A
 
 These awards recognize both our **security-first architecture** and our **advanced AI orchestration**.
 
----
+
 
 ## 🚀 Inspiration
 
@@ -36,7 +36,7 @@ We realized that traders are operating with **incomplete data**. While markets o
 
 In an era of peak uncertainty, the real edge isn’t just getting the news first — it’s **connecting macro probabilities directly to your portfolio**. Consensus Capital was built to unlock that missing dimension.
 
----
+
 
 ## 🧠 What It Does
 
@@ -50,7 +50,7 @@ Consensus Capital connects **real-time prediction markets** with **traditional a
 
 Instead of reacting to headlines, users gain a **360-degree view of portfolio exposure** that traditional tools miss.
 
----
+
 
 ## 🏗️ Architecture Overview
 
@@ -80,7 +80,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
 - Noise filtering (sports betting, irrelevant markets)
 - Natural-language insight generation
 
----
+
 
 ## 🧗 Challenges
 
@@ -89,7 +89,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
 - Pivoted to **semantic analysis using vector embeddings**
 - Required careful API design between Java and Python services
 
----
+
 
 ## 🏆 What We’re Proud Of
 
@@ -105,7 +105,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
 - 🔗 **Seamless Multi-Stack Integration**  
   React, Spring Boot, Python, and Gumloop working together cleanly.
 
----
+
 
 ## 📚 What We Learned
 
@@ -121,7 +121,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
 - **Rapidly Learning New AI Platforms**  
   Gumloop’s learning curve paid off with powerful orchestration.
 
----
+
 
 ## 🔮 What’s Next
 
@@ -130,7 +130,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
 - Custom Auth0 refresh tokens
 - Transparent explanations behind every correlation
 
----
+
 
 ## 🛠️ Built With
 
@@ -145,7 +145,7 @@ Instead of reacting to headlines, users gain a **360-degree view of portfolio ex
   <img src="https://img.shields.io/badge/Gumloop-AI-purple?style=for-the-badge" />
 </p>
 
----
+
 
 ## 📄 License
 
