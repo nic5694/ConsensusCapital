@@ -7,8 +7,6 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Hackathon%20Winner-success?style=flat-square" />
-  <img src="https://img.shields.io/badge/AI-Semantic%20Search-blue?style=flat-square" />
-  <img src="https://img.shields.io/badge/Architecture-Microservices-orange?style=flat-square" />
 </p>
 
 ---
