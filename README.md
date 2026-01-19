@@ -1,24 +1,27 @@
-# Consensus Capital
+# Consensus Capital 💵
+
 
 <p align="center">
   <img src="https://img.shields.io/badge/McHacks%2013%20Winner-Auth0%20Prize-gold?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/McHacks%2013%20Winner-Best%20Project%20Using%20Gumloop-blueviolet?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/McHacks%2013%20Winner-%231%20Best%20Project%20Using%20Gumloop-blueviolet?style=for-the-badge" />
 </p>
 
 
 ## 🛠️ Built With
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Auth0-black?logo=auth0&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/React-20232a?logo=react&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?logo=springboot&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Gumloop-AI-purple?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/React-20232a?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Java-6DB33F?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Gumloop-purple?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Gemini-blue?style=for-the-badge" />  
+  <img src="https://img.shields.io/badge/Auth0-black?style=for-the-badge" />
 </p>
-
+<br>
 
 **Consensus Capital** bridges traditional financial analysis with real-time prediction market probabilities to reveal hidden macro risks and non-obvious correlations in investment portfolios.
 
